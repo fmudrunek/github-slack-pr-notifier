@@ -72,7 +72,7 @@ def send_message(slackChannel: str, repositories: List[Repository], session):
 		slackNotificationResponse = session.post(url = "https://slack.com/api/chat.postMessage", data = json.dumps(slackNotificationParams))
 		slackNotificationResponse.raise_for_status()
 	except Exception as e:
-		print(f"Failed to send to channel {slackChannel} with error: {e.__class__.__name__}: {e.response}")
+		print(f"Failed to send to channel {slackChannel} with error: {e.__class__.__name__}: {e.response} : {e.message}")
 	else:
 		print(slackNotificationResponse)
 
