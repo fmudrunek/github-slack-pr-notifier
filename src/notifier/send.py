@@ -84,13 +84,12 @@ def filter_non_empty(channel_to_repository: Dict[str, List[Repository]]) -> Dict
 	}
 
 
+def run():
+	data = get_input()
+	channel_repository_dict = { entry['channel']:list(map(repository_from_json, entry['repositories'])) for entry in data }
+	filtered = filter_non_empty(channel_repository_dict)
+	session = get_session(properties.get_slack_bearer_token())
 
-
-data = get_input()
-channel_repository_dict = { entry['channel']:list(map(repository_from_json, entry['repositories'])) for entry in data }
-filtered = filter_non_empty(channel_repository_dict)
-session = get_session(properties.get_slack_bearer_token())
-
-for (channel, repositories) in filtered.items():
-	send_message(channel, repositories, session)
+	for (channel, repositories) in filtered.items():
+		send_message(channel, repositories, session)
 
