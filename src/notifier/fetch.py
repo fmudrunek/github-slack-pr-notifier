@@ -1,6 +1,8 @@
 from github import Github
 import json
-import properties
+
+from . import properties
+
 
 def pull_to_info(pullrequest):
 	return {'name': pullrequest.title,
