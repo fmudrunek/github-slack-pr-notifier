@@ -3,6 +3,7 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 import json
 from typing import List, Dict
+
 from .repository import Repository, PullRequest, repository_from_json
 from . import properties
 
@@ -73,7 +74,7 @@ def send_message(slack_channel: str, repositories: List[Repository], session):
 
     try:
         slack_notification_response = session.post(url="https://slack.com/api/chat.postMessage",
-                                                 data=json.dumps(slack_notification_params))
+                                                   data=json.dumps(slack_notification_params))
         slack_notification_response.raise_for_status()
     except Exception as e:
         print(
