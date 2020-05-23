@@ -8,6 +8,9 @@ class RepositorySummaryFormatter:
 
     def __format_pull_request(self, pull: PullRequestInfo) -> str:
         (days_ago, hours_ago) = pull.age
+        if days_ago > 0 and hours_ago >= 12:
+            days_ago += 1   # this mimics the behavior of GitHub UI
+
         age = f"{days_ago} days" if days_ago > 0 else f"{hours_ago} hours"
         age_urgency = self.__get_age_urgency(days_ago)
         review_status = self.__get_review_status(pull.review_status)
