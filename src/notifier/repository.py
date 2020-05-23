@@ -31,6 +31,7 @@ class PullRequestInfo:
         hours = math.floor(difference.seconds / 3600)
         return (days, hours)
 
+
 @dataclass(frozen=True)
 class RepositoryInfo:
     name: str

@@ -35,8 +35,6 @@ class SlackNotifier:
             print(slack_notification_response)
 
 
-
-
 def get_session(bearer_token) -> requests.Session:
     headers = {
         'content-type': 'application/json',
