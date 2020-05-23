@@ -1,9 +1,11 @@
 import os
+import json
+from typing import Dict, List
 
 
 def __get_env(variable):
     if variable not in os.environ:
-        raise ValueError(f"Provide '{variable}' environment variable")
+        raise ValueError(f"Environment variable '{variable}' not found")
     return os.environ[variable]
 
 
@@ -16,4 +18,10 @@ def get_slack_bearer_token() -> str:
 
 
 def get_github_base_url() -> str:
-    return "https://git.int.avast.com"
+    return __get_env("GITHUB_BASE_URL")
+
+
+def read_config(config_path) -> Dict[str, List[str]]:
+    with open(config_path) as json_data_file:
+        config = json.load(json_data_file)
+    return {entry["slack_channel"]: entry["repositories"] for entry in config}
