@@ -25,14 +25,16 @@ class SlackNotifier:
         }
 
         try:
-            slack_notification_response = self.session.post(url="https://slack.com/api/chat.postMessage",
+            response = self.session.post(url="https://slack.com/api/chat.postMessage",
                                                             data=json.dumps(slack_notification_params))
-            slack_notification_response.raise_for_status()
+            response.raise_for_status()
+            response_json = response.json()
+            if not response_json['ok']:
+                raise ValueError(response_json['error'])
         except Exception as e:
-            print(
-                f"Failed to send to channel {slack_channel} with error: {e.__class__.__name__}: {e.response} : {e.message}")
+            raise ValueError(f"Failed to send message to channel '{slack_channel}'", e)
         else:
-            print(slack_notification_response)
+            print(response)
 
 
 def get_session(bearer_token) -> requests.Session:
