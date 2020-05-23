@@ -6,12 +6,12 @@ services:
     image: fmudrunek/github-slack-pr-notifier
     volumes:
       - type: bind
-        source: ${PATH_TO_CONFIG}
-        target: /config.json
+        source: ./${PATH_TO_CONFIG}
+        target: /src/resources/config.json
         read_only: true
     environment:
       - GITHUB_TOKEN=${GITHUB_TOKEN}
       - SLACK_BEARER_TOKEN=${SLACK_BEARER_TOKEN}
-    entrypoint: [python3, runner.py]
+    entrypoint: [python, main.py]
 
 
