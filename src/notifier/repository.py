@@ -1,34 +1,37 @@
 from dataclasses import dataclass
-from typing import List
 from datetime import datetime
 import math
+from github import PullRequest
+from typing import List
 
 
 @dataclass(frozen=True)
-class PullRequest:
-    created_at: datetime
+class PullRequestInfo:
     name: str
-    url: str
     author: str
+    created_at: datetime
+    age: (int, int)
+    review_status: str
+    url: str
 
-    def get_age(self) -> (int, int):
+    @classmethod
+    def from_pull_request(cls, pull_request: PullRequest):
+        return cls(name=pull_request.title,
+                   author=pull_request.user.login,
+                   created_at=pull_request.created_at,
+                   age=cls.__get_age(pull_request.created_at),
+                   review_status="TBD",
+                   url=pull_request.html_url)
+
+    @staticmethod
+    def __get_age(from_when: datetime) -> (int, int):
         now = datetime.utcnow()
-        difference = now - self.created_at
+        difference = now - from_when
         days = difference.days
         hours = math.floor(difference.seconds / 3600)
         return (days, hours)
 
-
 @dataclass(frozen=True)
-class Repository:
+class RepositoryInfo:
     name: str
-    pulls: List[PullRequest]
-
-
-def __pull_from_json(data) -> PullRequest:
-    return PullRequest(datetime.strptime(data['created_at'], "%Y-%m-%d %H:%M:%S"), data['name'], data['url'],
-                       data['author'])
-
-
-def repository_from_json(data) -> Repository:
-    return Repository(data['name'], list(map(__pull_from_json, data['pulls'])))
+    pulls: List[PullRequestInfo]
