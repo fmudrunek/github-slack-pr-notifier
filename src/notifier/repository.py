@@ -20,7 +20,7 @@ class PullRequestInfo:
                    author=pull_request.user.login,
                    created_at=pull_request.created_at,
                    age=cls.__get_age(pull_request.created_at),
-                   review_status="TBD",
+                   review_status=cls.__get_review_status(pull_request.get_reviews()),
                    url=pull_request.html_url)
 
     @staticmethod
@@ -30,6 +30,10 @@ class PullRequestInfo:
         days = difference.days
         hours = math.floor(difference.seconds / 3600)
         return (days, hours)
+
+    @staticmethod
+    def __get_review_status(reviews) -> str:
+        return reviews.reversed[0].state if reviews.totalCount > 0 else "WAITING"
 
 
 @dataclass(frozen=True)
