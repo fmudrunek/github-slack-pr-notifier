@@ -17,8 +17,8 @@ def get_slack_bearer_token() -> str:
     return __get_env("SLACK_BEARER_TOKEN")
 
 
-def get_github_base_url() -> str:
-    return __get_env("GITHUB_BASE_URL")
+def get_github_api_url() -> str:
+    return __get_env("GITHUB_REST_API_URL")
 
 
 def read_config(config_path) -> Dict[str, List[str]]:
