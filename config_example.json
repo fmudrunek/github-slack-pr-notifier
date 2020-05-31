@@ -1,0 +1,12 @@
+{
+	"notifications": [
+		{
+			"slack_channel": "integration_test",
+			"repositories": ["fmudrunek/github-slack-pr-notifier"]
+		},
+		{
+			"slack_channel": "U0J1LSZAL",
+			"repositories": ["PyGithub/PyGithub", "adam-p/markdown-here"]
+		}
+	]
+}

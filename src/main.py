@@ -15,8 +15,8 @@ def main():
     config_path = Path(__file__).resolve().parent / 'resources' / 'config.json'
     slack_repositories_config = properties.read_config(config_path)
 
-    print(f"Fetching data from {properties.get_github_base_url()}")
-    fetcher = PullRequestFetcher(properties.get_github_base_url(),
+    print(f"Fetching data from {properties.get_github_api_url()}")
+    fetcher = PullRequestFetcher(properties.get_github_api_url(),
                                  properties.get_github_token())
 
     slack_repositories = {channel: list(map(fetcher.get_repository_info, repository_names))
