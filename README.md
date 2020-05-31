@@ -8,8 +8,8 @@ Github token https://help.github.com/en/github/authenticating-to-github/creating
 required env. variables
 see [.env.example](./.env.example)
 GITHUB_BASE_URL=https://github.com
-GITHUB_TOKEN=""
-SLACK_BEARER_TOKEN=""
+GITHUB_TOKEN=
+SLACK_BEARER_TOKEN=
 PATH_TO_CONFIG=./config.json
 TODO: add how-to-get and required permissions
 
@@ -34,4 +34,5 @@ config.json
 Modifications/usages
 How to run from Docker vs locally
 
-Github REST api url - api. vs /api/v3
+Github REST api url - api. vs /api/v3.
+    - TOKEN: No additional rights required
