@@ -1,8 +1,8 @@
-# Pull Requests Summary Notifier
+# Pull Requests Notifier
 Short description
 
 
-Github token https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line
+
 
 
 required env. variables
@@ -35,4 +35,5 @@ Modifications/usages
 How to run from Docker vs locally
 
 Github REST api url - api. vs /api/v3.
+    - Github token https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line
     - TOKEN: No additional rights required
