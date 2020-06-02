@@ -5,3 +5,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY ./src ./src
 WORKDIR ./src/
+CMD ["main.py"]
+ENTRYPOINT ["python"]

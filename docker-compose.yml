@@ -13,6 +13,6 @@ services:
       - GITHUB_REST_API_URL=${GITHUB_REST_API_URL}
       - GITHUB_TOKEN=${GITHUB_TOKEN}
       - SLACK_BEARER_TOKEN=${SLACK_BEARER_TOKEN}
-    entrypoint: [python, main.py]
+    command: main.py
 
 
