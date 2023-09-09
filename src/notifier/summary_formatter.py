@@ -1,4 +1,4 @@
-from .repository import RepositoryInfo, PullRequestInfo
+from repository import RepositoryInfo, PullRequestInfo
 
 
 class RepositorySummaryFormatter:
@@ -16,10 +16,10 @@ class RepositorySummaryFormatter:
         review_status = self.__get_review_status(pull.review_status)
         return f"- <{pull.url}|{pull.name}> ({age} ago by {pull.author}){age_urgency}{review_status}"
 
-    def __get_review_status(self, state):
+    def __get_review_status(self, state) -> str:
         return f" ({state})" if state in {"APPROVED", "CHANGES_REQUESTED"} else ""
 
-    def __get_age_urgency(self, days):
+    def __get_age_urgency(self, days) -> str:
         if days > 9:
             return " :redalert: "
         elif days > 7:

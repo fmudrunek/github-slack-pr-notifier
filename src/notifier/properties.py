@@ -3,10 +3,10 @@ import json
 from typing import Dict, List
 
 
-def __get_env(variable):
-    if variable not in os.environ:
-        raise ValueError(f"Environment variable '{variable}' not found")
-    return os.environ[variable]
+def __get_env(env_variable: str) -> str:
+    if env_variable not in os.environ:
+        raise ValueError(f"Environment variable '{env_variable}' not found")
+    return os.environ[env_variable]
 
 
 def get_github_token() -> str:
