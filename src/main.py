@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 from typing import Dict, List
 
@@ -9,19 +10,22 @@ from notifier.summary_formatter import RepositorySummaryFormatter
 
 # TODO rewrite to __main__.py
 
+LOG = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s (%(filename)s) %(message)s', datefmt='%d-%m-%y %H:%M:%S')
 
 def main():
-    print("Reading config")
     config_path = Path(__file__).resolve().parent / 'resources' / 'config.json'
     slack_repositories_config = properties.read_config(config_path)
 
-    print(f"Fetching data from {properties.get_github_api_url()}")
     fetcher = PullRequestFetcher(properties.get_github_api_url(),
                                  properties.get_github_token())
 
-    slack_repositories = {channel: list(map(fetcher.get_repository_info, repository_names))
-                          for (channel, repository_names) in slack_repositories_config.items()}
-    filtered = __filter_non_empty(slack_repositories)
+    channel_repositories = {}
+    for (channel, repository_names) in slack_repositories_config.items():
+        channel_repositories[channel] = [fetcher.get_repository_info(repo_name) for repo_name in repository_names]
+    
+    
+    filtered = __filter_non_empty(channel_repositories)
 
     slack_notifier = SlackNotifier("Open Pull Requests",
                                    properties.get_slack_bearer_token(),
