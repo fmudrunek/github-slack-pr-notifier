@@ -26,7 +26,7 @@ def main():
     
     filtered_channels = __filter_non_empty(channel_repositories)
 
-    slack_notifier = SlackNotifier(properties.get_slack_oauth_token(), list(filtered_channels.keys()), RepositorySummaryFormatter())
+    slack_notifier = SlackNotifier(properties.get_slack_oauth_token(), RepositorySummaryFormatter())
     
     for (channel, repositories) in filtered_channels.items():
         slack_notifier.send_message(channel, repositories)
@@ -35,8 +35,7 @@ def main():
 def __filter_non_empty(channel_to_repository: Dict[str, List[RepositoryInfo]]) -> Dict[str, List[RepositoryInfo]]:
     return {
         channel: [repo for repo in repositories if repo.pulls]  # filter repositories with some PRs
-        for (channel, repositories) in channel_to_repository.items() if any(repo.pulls for repo in repositories)
-        # only add channel if it has at least one repo with PRs
+        for (channel, repositories) in channel_to_repository.items() if any(repo.pulls for repo in repositories) # only add channel if it has at least one repo with PRs
     }
 
 

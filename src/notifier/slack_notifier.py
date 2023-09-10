@@ -14,7 +14,7 @@ from slack_sdk.errors import SlackApiError
 
 LOG = logging.getLogger(__name__)
 class SlackNotifier:
-    def __init__(self, oauth_token: str, channel_names: List[str], notification_formatter: RepositorySummaryFormatter):
+    def __init__(self, oauth_token: str, notification_formatter: RepositorySummaryFormatter):
         self.client = WebClient(token=oauth_token)
         self.notification_formatter = notification_formatter
         

@@ -1,5 +1,7 @@
 # Pull Requests Notifier
-Short description
+TODO:
+* Short description
+* Image of the bot in action
 
 
 ## How to use
@@ -36,10 +38,6 @@ See [config_example.json](./config_example.json)
 }
 
 ```
-#### How to change the name, icon and description of the Slack bot
-* Go to [Slack API - Apps](https://api.slack.com/apps), click on your app -> Basic Information -> Scroll down to Display Information.
-* Change the name, icon and description. This is what will be displayed in the Slack channel when the bot posts a message.
-
 ### Environment variables
 See [.env.example](./.env.example)
 ```
@@ -49,9 +47,16 @@ SLACK_OAUTH_TOKEN=
 PATH_TO_CONFIG=./config.json
 ```
 
-TODO: add how-to-get and required permissions
+### How to run
+* Using DockerHub
+* Locally
+    * Using Docker
+    * Using DockerCompose
+    * Using Python + Poetry
 
-
+### How to change the name, icon and description of the Slack bot
+* Go to [Slack API - Apps](https://api.slack.com/apps), click on your app -> Basic Information -> Scroll down to Display Information.
+* Change the name, icon and description. This is what will be displayed in the Slack channel when the bot posts a message.
 
 
 Modifications/usages
