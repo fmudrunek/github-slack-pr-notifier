@@ -4,7 +4,7 @@ from repository import RepositoryInfo, PullRequestInfo
 class RepositorySummaryFormatter:
 
     def format_repository(self, repo: RepositoryInfo) -> str:
-        return f"*{repo.name}*\n" + "\n".join(map(self.__format_pull_request, repo.pulls))
+        return f"*{repo.name}*\n" + "\n".join(self.__format_pull_request(pull) for pull in repo.pulls)
 
     def __format_pull_request(self, pull: PullRequestInfo) -> str:
         (days_ago, hours_ago) = pull.age

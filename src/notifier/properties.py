@@ -13,8 +13,8 @@ def get_github_token() -> str:
     return __get_env("GITHUB_TOKEN")
 
 
-def get_slack_bearer_token() -> str:
-    return __get_env("SLACK_BEARER_TOKEN")
+def get_slack_oauth_token() -> str:
+    return __get_env("SLACK_OAUTH_TOKEN")
 
 
 def get_github_api_url() -> str:

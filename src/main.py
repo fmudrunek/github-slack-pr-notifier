@@ -11,7 +11,7 @@ from notifier.summary_formatter import RepositorySummaryFormatter
 # TODO rewrite to __main__.py
 
 LOG = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s (%(filename)s) %(message)s', datefmt='%d-%m-%y %H:%M:%S')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s (%(filename)s:%(lineno)d) %(message)s', datefmt='%d-%m-%y %H:%M:%S')
 
 def main():
     config_path = Path(__file__).resolve().parent / 'resources' / 'config.json'
@@ -20,18 +20,15 @@ def main():
     fetcher = PullRequestFetcher(properties.get_github_api_url(),
                                  properties.get_github_token())
 
-    channel_repositories = {}
+    channel_repositories: dict[str, List[RepositoryInfo]] = {}
     for (channel, repository_names) in slack_repositories_config.items():
         channel_repositories[channel] = [fetcher.get_repository_info(repo_name) for repo_name in repository_names]
     
+    filtered_channels = __filter_non_empty(channel_repositories)
+
+    slack_notifier = SlackNotifier(properties.get_slack_oauth_token(), list(filtered_channels.keys()), RepositorySummaryFormatter())
     
-    filtered = __filter_non_empty(channel_repositories)
-
-    slack_notifier = SlackNotifier("Open Pull Requests",
-                                   properties.get_slack_bearer_token(),
-                                   RepositorySummaryFormatter())
-
-    for (channel, repositories) in filtered.items():
+    for (channel, repositories) in filtered_channels.items():
         slack_notifier.send_message(channel, repositories)
 
 

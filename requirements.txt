@@ -7,3 +7,4 @@ PyJWT==2.4.0
 requests==2.28.1
 urllib3==1.26.5
 wrapt==1.14.0
+slack-sdk==3.21.3
