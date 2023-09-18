@@ -15,7 +15,7 @@ class PullRequestFetcher:
         self.__github_url = github_url
         auth = Auth.Token(token)
         self.__github = Github(base_url=github_url, auth=auth, retry=3)
-        
+
     def get_repository_info(self, repository_name: str, pull_request_filters: List[PullRequestFilter]) -> RepositoryInfo:
         LOG.info(f"Fetching data for repository {repository_name} from {self.__github_url}")
         try:
