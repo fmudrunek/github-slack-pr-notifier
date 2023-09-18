@@ -29,6 +29,6 @@ class PullRequestFetcher:
         LOG.info("Found %d open Pull Requests for repository %s", pull_requests.totalCount, repository_name)
         return RepositoryInfo(name=repository_name, pulls=self.__filter_pull_requests(pull_requests, pull_request_filters))
     
-    
+
     def __filter_pull_requests(self, pull_requests: PaginatedList[PullRequest], pull_request_filters: List[PullRequestFilter]) ->List[PullRequestInfo]:
         return [createPullRequestInfo(pull_request) for pull_request in pull_requests if all(filter.applies(pull_request) for filter in pull_request_filters)]
