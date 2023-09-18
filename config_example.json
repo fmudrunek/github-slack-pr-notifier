@@ -2,7 +2,10 @@
 	"notifications": [
 		{
 			"slack_channel": "notifier-integration-test",
-			"repositories": ["fmudrunek/github-slack-pr-notifier"]
+			"repositories": ["fmudrunek/github-slack-pr-notifier"],
+			"filters": {
+				"authors": ["fmudrunek"]
+			}
 		},
 		{
 			"slack_channel": "notifier-integration-test-2",

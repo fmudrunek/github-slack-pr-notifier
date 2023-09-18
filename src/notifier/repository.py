@@ -6,6 +6,7 @@ from github.PullRequest import PullRequest
 from github.PullRequestReview import PullRequestReview
 from github.PaginatedList import PaginatedList
 from typing import List
+from abc import ABC, abstractmethod
 
 
 @dataclass(frozen=True, slots=True)
@@ -40,3 +41,16 @@ def createPullRequestInfo(pull_request: PullRequest) -> PullRequestInfo:
                             age=__get_age(pull_request.created_at),
                             review_status=__get_review_status(pull_request.get_reviews()),
                             url=pull_request.html_url)
+
+
+class PullRequestFilter(ABC):
+    @abstractmethod
+    def applies(self, pull_request: PullRequest) -> bool:
+        pass
+
+class AuthorFilter(PullRequestFilter):
+    def __init__(self, authors: List[str]) -> None:
+         self.authors = authors
+    
+    def applies(self, pull_request: PullRequest) -> bool:
+        return not self.authors or pull_request.user.login in self.authors

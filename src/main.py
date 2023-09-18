@@ -21,8 +21,9 @@ def main():
                                  properties.get_github_token())
 
     channel_repositories: dict[str, List[RepositoryInfo]] = {}
-    for (channel, repository_names) in slack_repositories_config.items():
-        channel_repositories[channel] = [fetcher.get_repository_info(repo_name) for repo_name in repository_names]
+    for (channel, channelConfig) in slack_repositories_config.items():
+        (repositories, repo_filters) = channelConfig
+        channel_repositories[channel] = [fetcher.get_repository_info(repo_name, repo_filters) for repo_name in repositories]
     
     filtered_channels = __filter_non_empty(channel_repositories)
 
