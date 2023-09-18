@@ -23,7 +23,7 @@ def get_github_api_url() -> str:
     return __get_env("GITHUB_REST_API_URL")
 
 
-ChannelConfig: TypeAlias = tuple[List[str], List[PullRequestFilter]]    # (repository_names, filters)
+ChannelConfig: TypeAlias = tuple[List[str], List[PullRequestFilter]]    # (repository_names, pull_request_filters)
 
 def read_config(config_path: Path) -> Dict[str, ChannelConfig]:
     with open(config_path) as json_data_file:
@@ -32,10 +32,10 @@ def read_config(config_path: Path) -> Dict[str, ChannelConfig]:
 
 
 def __parse_filters(config_entry) -> List[PullRequestFilter]:
-    if "filters" not in config_entry:
+    if "pull_request_filters" not in config_entry:
         return []
     
-    filters = config_entry["filters"]
+    filters = config_entry["pull_request_filters"]
     result = []
     if "authors" in filters:
         result.append(AuthorFilter(filters["authors"]))

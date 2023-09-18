@@ -3,7 +3,7 @@
 		{
 			"slack_channel": "notifier-integration-test",
 			"repositories": ["fmudrunek/github-slack-pr-notifier"],
-			"filters": {
+			"pull_request_filters": {
 				"authors": ["fmudrunek"]
 			}
 		},

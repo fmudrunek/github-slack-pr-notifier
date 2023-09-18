@@ -22,8 +22,8 @@ def main():
 
     channel_repositories: dict[str, List[RepositoryInfo]] = {}
     for (channel, channelConfig) in slack_repositories_config.items():
-        (repositories, repo_filters) = channelConfig
-        channel_repositories[channel] = [fetcher.get_repository_info(repo_name, repo_filters) for repo_name in repositories]
+        (repositories, pr_filters) = channelConfig
+        channel_repositories[channel] = [fetcher.get_repository_info(repo_name, pr_filters) for repo_name in repositories]
     
     filtered_channels = __filter_non_empty(channel_repositories)
 
