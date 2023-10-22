@@ -25,16 +25,19 @@ TODO:
 See [config_example.json](./config_example.json)
 ```json
 {
-  "notifications": [
-    {
-      "slack_channel": "integration_test",
-      "repositories": ["ipm/cdn", "ipm/cms"]
-    },
-    {
-      "slack_channel": "U0J1LSZAL",
-      "repositories": ["mamon/shepherd-cdn", "mamon/shepherd-cms", "mamon/mamba"]
-    }
-  ]
+    "notifications": [
+		{
+			"slack_channel": "notifier-integration-test",
+			"repositories": ["fmudrunek/github-slack-pr-notifier"],
+			"pull_request_filters": {
+				"authors": ["fmudrunek"]
+			}
+		},
+		{
+			"slack_channel": "notifier-integration-test-2",
+			"repositories": ["PyGithub/PyGithub", "adam-p/markdown-here"]
+		}
+	]
 }
 
 ```
