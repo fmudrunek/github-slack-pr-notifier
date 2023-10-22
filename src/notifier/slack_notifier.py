@@ -1,19 +1,21 @@
 import logging
 from typing import List
-from summary_formatter import RepositorySummaryFormatter
-from repository import RepositoryInfo
 
+from repository import RepositoryInfo
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
+from summary_formatter import RepositorySummaryFormatter
 
 # TODO notification_formatter should have a (interface) type
 
 LOG = logging.getLogger(__name__)
+
+
 class SlackNotifier:
     def __init__(self, oauth_token: str, notification_formatter: RepositorySummaryFormatter):
         self.client = WebClient(token=oauth_token)
         self.notification_formatter = notification_formatter
-        
+
     def send_message(self, channel_name: str, repositories: List[RepositoryInfo]) -> None:
         try:
             LOG.debug(f"Sending message to channel #{channel_name})")
