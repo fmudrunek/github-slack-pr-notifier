@@ -1,0 +1,46 @@
+[tool.poetry]
+name = "github-slack-pr-notifier"
+version = "0.1.0"
+description = ""
+authors = []
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+slack-sdk = "3.21.3"
+PyGithub = "1.59.1"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.9.1"
+isort = "^5.12.0"
+poethepoet = "^0.22.1"
+pytest = "^7.4.2"
+mypy = "^1.5.1"
+pytest-pylint = "^0.19.0"
+pytest-mypy = "^0.10.3"
+
+[tool.poe.tasks]
+_black = "black ."
+_isort = "isort ."
+format-code = ["_isort", "_black"]
+
+[tool.pytest.ini_options]
+addopts = "--verbose --pylint --pylint-rcfile=pyproject.toml --mypy"
+
+[tool.isort]
+profile = "black"
+
+[tool.black]
+line-length = 99
+
+[tool.mypy]
+strict = true
+ignore_missing_imports = true
+mypy_path = "src"
+namespace_packages = true
+explicit_package_bases = true
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

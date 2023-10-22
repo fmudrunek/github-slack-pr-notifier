@@ -1,8 +1,4 @@
 import logging
-from requests import Session
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
-import json
 from typing import List
 from summary_formatter import RepositorySummaryFormatter
 from repository import RepositoryInfo
