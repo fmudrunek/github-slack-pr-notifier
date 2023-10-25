@@ -62,3 +62,10 @@ class AuthorFilter(PullRequestFilter):
 
     def applies(self, pull_request: PullRequest) -> bool:
         return not self.authors or pull_request.user.login in self.authors
+
+class DraftFilter(PullRequestFilter):
+    def __init__(self, include_drafts: bool) -> None:
+        self.include_drafts = include_drafts
+        
+    def applies(self, pull_request: PullRequest) -> bool:
+        return self.include_drafts or pull_request.draft == False
