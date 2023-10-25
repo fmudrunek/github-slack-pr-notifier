@@ -2,6 +2,7 @@
 TODO:
 * Short description
 * Image of the bot in action
+* Describe configuration options
 
 
 ## How to use
