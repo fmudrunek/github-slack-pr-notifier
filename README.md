@@ -32,7 +32,7 @@ See [config_example.json](./config_example.json)
 			"repositories": ["fmudrunek/github-slack-pr-notifier"],
 			"pull_request_filters": {
 				"authors": ["fmudrunek"],
-                "include_drafts": true
+                "include_drafts": false
 			}
 		},
 		{
