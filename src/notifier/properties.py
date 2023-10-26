@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 from typing import Dict, List, TypeAlias
 
-from repository import AuthorFilter, PullRequestFilter
+from repository import AuthorFilter, DraftFilter, PullRequestFilter
 
 
 def __get_env(env_variable: str) -> str:
@@ -41,5 +41,7 @@ def __parse_filters(config_entry) -> List[PullRequestFilter]:
     result = []
     if "authors" in filters:
         result.append(AuthorFilter(filters["authors"]))
+    if "include_drafts" in filters:
+        result.append(DraftFilter(filters["include_drafts"]))
 
     return result

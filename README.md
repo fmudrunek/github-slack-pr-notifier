@@ -31,7 +31,8 @@ See [config_example.json](./config_example.json)
 			"slack_channel": "notifier-integration-test",
 			"repositories": ["fmudrunek/github-slack-pr-notifier"],
 			"pull_request_filters": {
-				"authors": ["fmudrunek"]
+				"authors": ["fmudrunek"],
+                "include_drafts": false
 			}
 		},
 		{
