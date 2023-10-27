@@ -1,7 +1,7 @@
 import json
 import os
 from pathlib import Path
-from typing import Dict, List, TypeAlias
+from typing import Dict, List, TypeAlias, Any
 
 from repository import AuthorFilter, DraftFilter, PullRequestFilter
 
@@ -33,7 +33,7 @@ def read_config(config_path: Path) -> Dict[str, ChannelConfig]:
     return {entry["slack_channel"]: (entry["repositories"], __parse_filters(entry)) for entry in config["notifications"]}
 
 
-def __parse_filters(config_entry) -> List[PullRequestFilter]:
+def __parse_filters(config_entry: Any) -> List[PullRequestFilter]:
     if "pull_request_filters" not in config_entry:
         return []
 

@@ -36,7 +36,7 @@ def __get_age(from_when: datetime) -> tuple[int, int]:
 
 
 def __get_review_status(reviews: PaginatedList[PullRequestReview]) -> str:
-    return reviews.reversed[0].state if reviews.totalCount > 0 else "WAITING"
+    return str(reviews.reversed[0].state) if reviews.totalCount > 0 else "WAITING"
 
 
 def createPullRequestInfo(pull_request: PullRequest) -> PullRequestInfo:

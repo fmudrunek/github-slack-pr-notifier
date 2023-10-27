@@ -1,7 +1,7 @@
 import logging
 from typing import List
 
-from github import Auth, Github, PaginatedList, PullRequest, UnknownObjectException
+from github import Auth, Github, UnknownObjectException
 from github.GithubException import GithubException
 from github.PaginatedList import PaginatedList
 from github.PullRequest import PullRequest
