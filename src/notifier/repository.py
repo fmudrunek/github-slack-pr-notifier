@@ -3,7 +3,7 @@ from __future__ import annotations
 import math
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List
 
 from github.PaginatedList import PaginatedList
@@ -28,7 +28,7 @@ class RepositoryInfo:
 
 
 def __get_age(from_when: datetime) -> tuple[int, int]:
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     difference = now - from_when
     days = difference.days
     hours = math.floor(difference.seconds / 3600)

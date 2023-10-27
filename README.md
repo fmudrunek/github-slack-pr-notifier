@@ -90,6 +90,14 @@ Then you can install dependencies
 
     poetry install
 
+To update dependencies within the pinned range, run:
+
+    poetry update
+
+To show dependency updates outside the pinned range:
+
+    poetry show --outdated --top-level
+
 ### Run tests, linters and type checkers
 Everything is hooked to pytest. You can run all tests and checks with:
     poetry run pytest
