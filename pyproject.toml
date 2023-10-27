@@ -16,8 +16,8 @@ black = "^23.9.1"
 isort = "^5.12.0"
 poethepoet = "^0.22.1"
 pytest = "^7.4.2"
+pytest-pylint = "^0.21.0"
 mypy = "^1.5.1"
-pytest-pylint = "^0.19.0"
 pytest-mypy = "^0.10.3"
 
 [tool.poe.tasks]
@@ -40,6 +40,30 @@ ignore_missing_imports = true
 mypy_path = "src"
 namespace_packages = true
 explicit_package_bases = true
+
+[tool.pylint.messages_control]
+disable = "all"
+enable = """,
+    unused-import,
+    fixme,
+    useless-object-inheritance,
+    seless-import-alias,
+    unused-variable,
+    unused-argument,
+    unexpected-keyword-arg,
+    string,
+    unreachable,
+    invalid-name,
+    logging-format-interpolation,
+    logging-fstring-interpolation,
+    unnecessary-pass,
+    broad-except,
+    bare-except,
+    consider-using-from-import,
+    raise-missing-from,
+    no-else-return
+    """
+ignored_argument_names = "_.*|^ignored_|^unused_|args|kwargs"
 
 [build-system]
 requires = ["poetry-core"]

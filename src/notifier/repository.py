@@ -36,10 +36,10 @@ def __get_age(from_when: datetime) -> tuple[int, int]:
 
 
 def __get_review_status(reviews: PaginatedList[PullRequestReview]) -> str:
-    return reviews.reversed[0].state if reviews.totalCount > 0 else "WAITING"
+    return str(reviews.reversed[0].state) if reviews.totalCount > 0 else "WAITING"
 
 
-def createPullRequestInfo(pull_request: PullRequest) -> PullRequestInfo:
+def create_pull_request_info(pull_request: PullRequest) -> PullRequestInfo:
     return PullRequestInfo(
         name=pull_request.title,
         author=pull_request.user.login,
@@ -63,9 +63,10 @@ class AuthorFilter(PullRequestFilter):
     def applies(self, pull_request: PullRequest) -> bool:
         return not self.authors or pull_request.user.login in self.authors
 
+
 class DraftFilter(PullRequestFilter):
     def __init__(self, include_drafts: bool) -> None:
         self.include_drafts = include_drafts
-        
+
     def applies(self, pull_request: PullRequest) -> bool:
-        return self.include_drafts or pull_request.draft == False
+        return self.include_drafts or pull_request.draft is False

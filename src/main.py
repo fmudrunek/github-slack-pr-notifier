@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 from typing import Dict, List
 
-import notifier.properties as properties
+from notifier import properties
 from notifier.pull_request_fetcher import PullRequestFetcher
 from notifier.repository import RepositoryInfo
 from notifier.slack_notifier import SlackNotifier
@@ -14,16 +14,16 @@ LOG = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s (%(filename)s:%(lineno)d) %(message)s", datefmt="%d-%m-%y %H:%M:%S")
 
 
-def main():
+def main() -> None:
     config_path = Path(__file__).resolve().parent / "resources" / "config.json"
     slack_repositories_config = properties.read_config(config_path)
 
     fetcher = PullRequestFetcher(properties.get_github_api_url(), properties.get_github_token())
 
     channel_repositories: dict[str, List[RepositoryInfo]] = {}
-    for channel, channelConfig in slack_repositories_config.items():
-        (repositories, pr_filters) = channelConfig
-        channel_repositories[channel] = [fetcher.get_repository_info(repo_name, pr_filters) for repo_name in repositories]
+    for channel, channel_config in slack_repositories_config.items():
+        (repository_names, pr_filters) = channel_config
+        channel_repositories[channel] = [fetcher.get_repository_info(repo_name, pr_filters) for repo_name in repository_names]
 
     filtered_channels = __filter_non_empty(channel_repositories)
 
