@@ -23,5 +23,5 @@ class RepositorySummaryFormatter:
             return " :redalert: "
         if days > 7:
             return " :alert:"
-        
+
         return ""

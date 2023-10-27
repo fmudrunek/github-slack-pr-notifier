@@ -91,7 +91,7 @@ Then you can install dependencies
     poetry install
 
 ### Run tests, linters and type checkers
-Everything is hooked to pytest. You can run all checks with:
+Everything is hooked to pytest. You can run all tests and checks with:
     poetry run pytest
 
 ### Code formatting

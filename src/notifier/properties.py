@@ -1,7 +1,7 @@
 import json
 import os
 from pathlib import Path
-from typing import Dict, List, TypeAlias, Any
+from typing import Any, Dict, List, TypeAlias
 
 from repository import AuthorFilter, DraftFilter, PullRequestFilter
 
