@@ -18,14 +18,14 @@ class SlackNotifier:
 
     def send_message(self, channel_name: str, repositories: List[RepositoryInfo]) -> None:
         try:
-            LOG.debug(f"Sending message to channel #{channel_name})")
+            LOG.debug("Sending message to channel #%s)", channel_name)
             result = self.client.chat_postMessage(
                 channel=channel_name,
                 text="\n".join([self.notification_formatter.format_repository(repository) for repository in repositories]),
                 unfurl_links=False,
                 unfurl_media=False,
             )
-            LOG.debug(f"Slack responded with Result: {result}")
+            LOG.debug("Slack responded with Result: %s", result)
 
         except SlackApiError as e:
-            raise ValueError(f"Failed to send message to channel #{channel_name}: {e}")
+            raise ValueError(f"Failed to send message to channel #{channel_name}: {e}") from e

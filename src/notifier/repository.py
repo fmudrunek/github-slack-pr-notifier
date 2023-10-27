@@ -39,7 +39,7 @@ def __get_review_status(reviews: PaginatedList[PullRequestReview]) -> str:
     return str(reviews.reversed[0].state) if reviews.totalCount > 0 else "WAITING"
 
 
-def createPullRequestInfo(pull_request: PullRequest) -> PullRequestInfo:
+def create_pull_request_info(pull_request: PullRequest) -> PullRequestInfo:
     return PullRequestInfo(
         name=pull_request.title,
         author=pull_request.user.login,
@@ -68,4 +68,4 @@ class DraftFilter(PullRequestFilter):
         self.include_drafts = include_drafts
         
     def applies(self, pull_request: PullRequest) -> bool:
-        return self.include_drafts or pull_request.draft == False
+        return self.include_drafts or pull_request.draft is False

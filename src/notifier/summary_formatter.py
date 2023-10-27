@@ -21,7 +21,7 @@ class RepositorySummaryFormatter:
     def __get_age_urgency(self, days: int) -> str:
         if days > 9:
             return " :redalert: "
-        elif days > 7:
+        if days > 7:
             return " :alert:"
-        else:
-            return ""
+        
+        return ""
