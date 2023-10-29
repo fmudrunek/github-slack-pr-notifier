@@ -8,7 +8,7 @@ from repository import RepositoryInfo
 from slack_notifier import SlackNotifier
 from summary_formatter import RepositorySummaryFormatter
 
-# TODO rewrite to __main__.py
+# TODO rewrite to __main__.py or call this main() from it
 
 LOG = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s (%(filename)s:%(lineno)d) %(message)s", datefmt="%d-%m-%y %H:%M:%S")

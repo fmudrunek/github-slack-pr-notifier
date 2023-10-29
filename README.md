@@ -3,7 +3,6 @@ TODO:
 * Short description
 * Image of the bot in action
 * Describe configuration options
-* How to use .env file. Using python-dotenv
 
 
 ## How to use
@@ -45,6 +44,7 @@ See [config_example.json](./config_example.json)
 
 ```
 ### Environment variables
+The application will load env variables either from the environment or from a `.env` file when it is present (which can be useful for local run/testing).
 See [.env.example](./.env.example)
 ```
 GITHUB_BASE_URL=https://github.com
