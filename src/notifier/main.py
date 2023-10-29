@@ -2,20 +2,21 @@ import logging
 from pathlib import Path
 from typing import Dict, List
 
-from notifier import properties
-from notifier.pull_request_fetcher import PullRequestFetcher
-from notifier.repository import RepositoryInfo
-from notifier.slack_notifier import SlackNotifier
-from notifier.summary_formatter import RepositorySummaryFormatter
+import properties
+from pull_request_fetcher import PullRequestFetcher
+from repository import RepositoryInfo
+from slack_notifier import SlackNotifier
+from summary_formatter import RepositorySummaryFormatter
 
 # TODO rewrite to __main__.py
 
 LOG = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s (%(filename)s:%(lineno)d) %(message)s", datefmt="%d-%m-%y %H:%M:%S")
+root_dir = Path(__file__).resolve().parents[2]
 
 
 def main() -> None:
-    config_path = Path(__file__).resolve().parent / "resources" / "config.json"
+    config_path = root_dir / "resources" / "config.json"
     slack_repositories_config = properties.read_config(config_path)
 
     fetcher = PullRequestFetcher(properties.get_github_api_url(), properties.get_github_token())

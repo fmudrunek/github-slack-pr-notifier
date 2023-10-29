@@ -3,7 +3,10 @@ import os
 from pathlib import Path
 from typing import Any, Dict, List, TypeAlias
 
+from dotenv import load_dotenv
 from repository import AuthorFilter, DraftFilter, PullRequestFilter
+
+load_dotenv()
 
 
 def __get_env(env_variable: str) -> str:
