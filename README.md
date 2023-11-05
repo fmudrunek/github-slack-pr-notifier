@@ -115,6 +115,7 @@ Then you can install dependencies
 
 ### Run tests, linters and type checkers
 Everything is hooked to pytest. You can run all tests and checks with:
+
     poetry run pytest
 
 ### Code formatting
