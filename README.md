@@ -60,18 +60,14 @@ See [config_example.json](./config_example.json)
 ```
 
 ### How to run
-* Using DockerHub
-* Locally
-    * Using Docker
-    * Using DockerCompose
-    * Using Python + Poetry
+Before you run the app, make sure you have already setup the `.env` file and the `config.json` file.
+#### Directly from Docker Hub
+The app is available as a Docker image [fmudrunek/github-slack-pr-notifier](https://hub.docker.com/r/fmudrunek/github-slack-pr-notifier) on Docker Hub. You can run it directly with:
 
-#### Using Docker Hub
+    docker run --rm --env-file ./.env -v ${pwd}/resources/config.json:/app/resources/config.json:ro fmudrunek/github-slack-pr-notifier:latest
 
 #### Locally
 ##### Using Docker
-The following will build&run a container with env. variables from the `.env` file and the config from `./resources/config.json`. Make sure to update the files first.
-
     docker build -t pr_notifier .
     docker run --rm --env-file ./.env -v ${pwd}/resources/config.json:/app/resources/config.json:ro pr_notifier
 
@@ -82,7 +78,7 @@ For added convenience, a Docker Compose file is available to automatically build
 
 ##### Using Python + Poetry
 1. Follow the [Development](#development) section to set up your virtual environment and install dependencies.
-2. Run the app
+2. Run the app. It will be looking into `./resources/config.json` for the configuration.
 
         poetry run python .\src\notifier\main.py
 
