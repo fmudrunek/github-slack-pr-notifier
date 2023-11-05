@@ -3,7 +3,7 @@ version: '3.2'
 services:
   app:
     build: .
-    image: fmudrunek/github-slack-pr-notifier
+    image: github-slack-pr-notifier
     volumes:
       - type: bind
         source: ./resources/config.json
