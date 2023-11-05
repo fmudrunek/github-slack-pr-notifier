@@ -34,7 +34,6 @@ See [.env.example](./.env.example)
 GITHUB_BASE_URL=https://github.com
 GITHUB_TOKEN=
 SLACK_OAUTH_TOKEN=
-PATH_TO_CONFIG=./config.json
 ```
 
 ### Configuration
