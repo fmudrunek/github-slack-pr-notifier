@@ -6,13 +6,8 @@ services:
     image: fmudrunek/github-slack-pr-notifier
     volumes:
       - type: bind
-        source: ./${PATH_TO_CONFIG}
-        target: /src/resources/config.json
+        source: ./resources/config.json
+        target: /app/resources/config.json
         read_only: true
-    environment:
-      - GITHUB_REST_API_URL=${GITHUB_REST_API_URL}
-      - GITHUB_TOKEN=${GITHUB_TOKEN}
-      - SLACK_OAUTH_TOKEN=${SLACK_OAUTH_TOKEN}
-    command: main.py
-
-
+    env_file:
+      - .env
