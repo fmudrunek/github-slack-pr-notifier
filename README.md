@@ -1,8 +1,7 @@
 # Pull Requests Notifier
-TODO:
-* Short description
-* Image of the bot in action
-* Describe configuration options
+A simple, configurable tool to send GitHub Pull Request summaries to Slack.
+
+Using a simple JSON configuration file, you can configure the app to watch multiple repositories and post summaries to multiple Slack channels.
 
 
 ## How to use
@@ -55,23 +54,30 @@ See [config_example.json](./config_example.json)
 		}
 	]
 }
-
 ```
+Each object in the `notifications` array represents a single notification configuration. The app will watch all the repositories listed in the `repositories` array and post summaries to the Slack channel specified in the `slack_channel` field.
+
+The `pull_request_filters` object is optional. If it is present, the app will only post summaries for pull requests that match the filters. If it is not present, the app will post summaries for all pull requests.
+Available filters:
+* `authors` - a list of Github usernames. If present, the app will only post summaries for pull requests created by the specified users.
+* `include_drafts` - a boolean. If `true`, the app will post summaries for draft pull requests. If `false`, the app will ignore draft pull requests.
 
 ### How to run
 Before you run the app, make sure you have already setup the `.env` file and the `config.json` file.
 #### Directly from Docker Hub
-The app is available as a Docker image [fmudrunek/github-slack-pr-notifier](https://hub.docker.com/r/fmudrunek/github-slack-pr-notifier) on Docker Hub. You can run it directly with:
+The app is available as a Docker image [fmudrunek/github-slack-pr-notifier](https://hub.docker.com/r/fmudrunek/github-slack-pr-notifier) on Docker Hub so it can be run directly. Just mount a `config.json` into /app/resources in the container:
 
-    docker run --rm --env-file ./.env -v ${pwd}/resources/config.json:/app/resources/config.json:ro fmudrunek/github-slack-pr-notifier:latest
+    docker run --env-file ./.env -v ${pwd}/my_config.json:/app/resources/config.json:ro fmudrunek/github-slack-pr-notifier:latest
 
 #### Locally
 ##### Using Docker
+Add your configuration to `/resources/config.json` and run the following commands:
+
     docker build -t pr_notifier .
-    docker run --rm --env-file ./.env -v ${pwd}/resources/config.json:/app/resources/config.json:ro pr_notifier
+    docker run --env-file ./.env -v ${pwd}/resources/config.json:/app/resources/config.json:ro pr_notifier
 
 ##### Using DockerCompose
-For added convenience, a Docker Compose file is available to automatically build and run the container for you, using the configuration from the `.env` and `./resources/config.json` files.
+For added convenience, a Docker Compose file is available to automatically build and run the container for you, using the configuration from the `.env` and `./resources/config.json` file.
 
     docker compose up
 
@@ -86,9 +92,6 @@ For added convenience, a Docker Compose file is available to automatically build
 * Go to [Slack API - Apps](https://api.slack.com/apps), click on your app -> Basic Information -> Scroll down to Display Information.
 * Change the name, icon and description. This is what will be displayed in the Slack channel when the bot posts a message.
 
-
-Modifications/usages
-How to run from Docker vs locally
 
 ## Development
 For details on work with the code/project, how to run tests, formatters & how to to do maintenance work see the [Developer README.md](./src/notifier/README.md)
