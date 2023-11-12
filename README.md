@@ -91,4 +91,4 @@ Modifications/usages
 How to run from Docker vs locally
 
 ## Development
-For details on work with the code/project, how to run tests, formatters & how to to do maintenance work see [README_DEV.md](./src/notifier/README_DEV.md)
+For details on work with the code/project, how to run tests, formatters & how to to do maintenance work see the [Developer README.md](./src/notifier/README.md)
