@@ -27,7 +27,7 @@ ENV PYTHONUNBUFFERED=1 \
 
 COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 
-COPY ./src/notifier /app/src/notifier
+COPY ./src/notifier/*.py /app/src/notifier/
 
 WORKDIR app/src/notifier
 
