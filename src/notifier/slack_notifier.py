@@ -21,7 +21,7 @@ class SlackNotifier:
             LOG.info("Sending message to channel #%s)", channel_name)
             result = self.client.chat_postMessage(
                 channel=channel_name,
-                text="\n".join([self.notification_formatter.format_repository(repository) for repository in repositories]),
+                text="\n\n".join([self.notification_formatter.format_repository(repository) for repository in repositories]),
                 unfurl_links=False,
                 unfurl_media=False,
             )
