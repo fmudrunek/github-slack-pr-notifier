@@ -13,15 +13,15 @@ class RepositorySummaryFormatter:
         age = f"{days_ago} days" if days_ago > 0 else f"{hours_ago} hours"
         age_urgency = self.__get_age_urgency(days_ago)
         review_status = self.__get_review_status(pull.review_status)
-        return f"- <{pull.url}|{pull.name}> ({age} ago by {pull.author}){age_urgency}{review_status}"
+        return f"• {age_urgency} <{pull.url}|{pull.name}> ({age} ago by {pull.author}){review_status}"
 
     def __get_review_status(self, status: str) -> str:
         return f" ({status})" if status in {"APPROVED", "CHANGES_REQUESTED"} else ""
 
     def __get_age_urgency(self, days: int) -> str:
         if days > 9:
-            return " :redalert: "
+            return " :alert: "
         if days > 7:
-            return " :alert:"
+            return " :warning:"
 
         return ""

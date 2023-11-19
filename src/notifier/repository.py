@@ -40,6 +40,10 @@ def __get_review_status(reviews: PaginatedList[PullRequestReview]) -> str:
 
 
 def create_pull_request_info(pull_request: PullRequest) -> PullRequestInfo:
+    """ 
+    Creates a PullRequestInfo from a PullRequest
+    Note that this method does network I/O - it calls the GitHub API to fetch the reviews for given Pull Request.
+    """
     return PullRequestInfo(
         name=pull_request.title,
         author=pull_request.user.login,

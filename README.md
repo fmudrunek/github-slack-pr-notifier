@@ -8,7 +8,7 @@ Using a simple JSON configuration file, you can configure the app to watch multi
 The app needs 3 things to run:
 1. A **Github token** to be able to access the Github API
 2. A **Slack token** to be able to post messages to Slack
-3. A **configuration file** to tell the app which repositories to watch and where to post the messages
+3. A **JSON configuration file** to tell the app which repositories to watch and where to post the messages
 
 ### Required integration tokens
 1. Get a Github token
@@ -67,14 +67,14 @@ Before you run the app, make sure you have already setup the `.env` file and the
 #### Directly from Docker Hub
 The app is available as a Docker image [fmudrunek/github-slack-pr-notifier](https://hub.docker.com/r/fmudrunek/github-slack-pr-notifier) on Docker Hub so it can be run directly. Just mount a `config.json` into /app/resources in the container:
 
-    docker run --env-file ./.env -v ${pwd}/my_config.json:/app/resources/config.json:ro fmudrunek/github-slack-pr-notifier:latest
+    docker run --rm --env-file ./.env -v ${pwd}/my_config.json:/app/resources/config.json:ro fmudrunek/github-slack-pr-notifier:latest
 
 #### Locally
 ##### Using Docker
 Add your configuration to `/resources/config.json` and run the following commands:
 
     docker build -t pr_notifier .
-    docker run --env-file ./.env -v ${pwd}/resources/config.json:/app/resources/config.json:ro pr_notifier
+    docker run --rm --env-file ./.env -v ${pwd}/resources/config.json:/app/resources/config.json:ro pr_notifier
 
 ##### Using DockerCompose
 For added convenience, a Docker Compose file is available to automatically build and run the container for you, using the configuration from the `.env` and `./resources/config.json` file.
