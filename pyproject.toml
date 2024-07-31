@@ -8,16 +8,16 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-slack-sdk = "^3.21.3"
-PyGithub = "^2.1.1"
-python-dotenv = "^1.0.0"
+slack-sdk = "^3.31.0"
+PyGithub = "^2.3.0"
+python-dotenv = "^1.0.1"
 
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.9.1"
-isort = "^5.12.0"
-poethepoet = "^0.24.1"
-pytest = "^7.4.2"
+black = "^24.4.2"
+isort = "^5.13.2"
+poethepoet = "^0.27.0"
+pytest = "^8.3.2"
 pytest-pylint = "^0.21.0"
 mypy = "^1.5.1"
 pytest-mypy = "^0.10.3"
