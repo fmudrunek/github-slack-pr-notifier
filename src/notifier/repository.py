@@ -19,6 +19,9 @@ class PullRequestInfo:
     age: tuple[int, int]
     review_status: str
     url: str
+    additions: int
+    deletions: int
+    changed_files: int
 
 
 @dataclass(frozen=True, slots=True)
@@ -51,6 +54,9 @@ def create_pull_request_info(pull_request: PullRequest) -> PullRequestInfo:
         age=__get_age(pull_request.created_at),
         review_status=__get_review_status(pull_request.get_reviews()),
         url=pull_request.html_url,
+        additions=pull_request.additions,
+        deletions=pull_request.deletions,
+        changed_files=pull_request.changed_files
     )
 
 
