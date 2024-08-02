@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any, List, TypeAlias
 from repository import PullRequestInfo, RepositoryInfo
 import json
 
@@ -7,6 +7,9 @@ import json
 Formats the summary message for Slack using Slack's Block Kit format (instead of Markdown which is simpler but less capable)
 """
 class SummaryMessageFormatter:
+    
+    SlackBlock: TypeAlias = dict[str, Any]
+    
     def __get_review_status(self, status: str) -> str:
         return f" {status}" if status in {"APPROVED", "CHANGES_REQUESTED"} else ""
     
@@ -22,7 +25,7 @@ class SummaryMessageFormatter:
 
         return ""
     
-    def __format_pull_request(self, pull: PullRequestInfo):
+    def __format_pull_request(self, pull: PullRequestInfo) -> SlackBlock:
         (days_ago, hours_ago) = pull.age
         if days_ago > 0 and hours_ago >= 12:
             days_ago += 1  # this mimics the behavior of GitHub UI
@@ -68,7 +71,7 @@ class SummaryMessageFormatter:
                 "elements": [block for block in element_blocks if block]
         }
 
-    def __format_repository(self, repo: RepositoryInfo):
+    def __format_repository(self, repo: RepositoryInfo) -> list[SlackBlock]:
         return [
             {
                 "type": "header",
@@ -92,7 +95,7 @@ class SummaryMessageFormatter:
         
     
     
-    def get_summary_blocks(self, repos: List[RepositoryInfo]):
+    def get_summary_blocks(self, repos: List[RepositoryInfo]) -> str:
         result = []
         repo_blocks = [self.__format_repository(repo) for repo in repos]
         for repo_block in repo_blocks:

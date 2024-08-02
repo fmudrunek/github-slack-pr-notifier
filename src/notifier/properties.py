@@ -34,12 +34,12 @@ def read_config(config_path: Path) -> Dict[str, ChannelConfig]:
     try:
         with open(config_path) as json_data_file:
             config = json.load(json_data_file)
-    except FileNotFoundError:
-        raise FileNotFoundError(f"Config file {config_path} not found.")
-    except json.JSONDecodeError:
-        raise ValueError(f"Config file {config_path} is not a valid JSON.")
-    except IsADirectoryError:
-        raise IsADirectoryError(f"Config path {config_path} is a directory. Check that the config path is correct.")
+    except FileNotFoundError as exc:
+        raise FileNotFoundError(f"Config file {config_path} not found.") from exc
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"Config file {config_path} is not a valid JSON.") from exc
+    except IsADirectoryError as exc:
+        raise IsADirectoryError(f"Config path {config_path} is a directory. Check that the config path is correct.") from exc
         
     if not config:
             raise ValueError(f"Config file {config_path} is empty")
