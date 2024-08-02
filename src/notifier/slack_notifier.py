@@ -22,7 +22,7 @@ class SlackBlockNotifier:
 
     def send_message(self, channel_name: str, repositories: List[RepositoryInfo]) -> None:
         try:
-            LOG.info("Sending message to channel #%s)", channel_name)
+            LOG.info("Sending message to channel #%s", channel_name)
             result = self.client.chat_postMessage(
                 channel=channel_name,
                 blocks=self.notification_formatter.get_summary_blocks(repositories),
