@@ -5,8 +5,8 @@ from typing import Dict, List
 import properties
 from pull_request_fetcher import PullRequestFetcher
 from repository import RepositoryInfo
-from slack_notifier import SlackNotifier
-from summary_formatter import RepositorySummaryFormatter
+from slack_notifier import SlackBlockNotifier
+from summary_formatter import SummaryMessageFormatter
 
 # TODO rewrite to __main__.py or call this main() from it
 
@@ -28,7 +28,7 @@ def main() -> None:
 
     filtered_channels = __filter_non_empty(channel_repositories)
 
-    slack_notifier = SlackNotifier(properties.get_slack_oauth_token(), RepositorySummaryFormatter())
+    slack_notifier = SlackBlockNotifier(properties.get_slack_oauth_token(), SummaryMessageFormatter())
 
     for channel, repositories in filtered_channels.items():
         slack_notifier.send_message(channel, repositories)

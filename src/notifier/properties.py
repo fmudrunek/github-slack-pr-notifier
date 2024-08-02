@@ -31,10 +31,19 @@ ChannelConfig: TypeAlias = tuple[List[str], List[PullRequestFilter]]  # (reposit
 
 
 def read_config(config_path: Path) -> Dict[str, ChannelConfig]:
-    with open(config_path) as json_data_file:
-        config = json.load(json_data_file)
+    try:
+        with open(config_path) as json_data_file:
+            config = json.load(json_data_file)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Config file {config_path} not found.")
+    except json.JSONDecodeError:
+        raise ValueError(f"Config file {config_path} is not a valid JSON.")
+    except IsADirectoryError:
+        raise IsADirectoryError(f"Config path {config_path} is a directory. Check that the config path is correct.")
+        
     if not config:
-        raise ValueError(f"Config file {config_path} is empty")
+            raise ValueError(f"Config file {config_path} is empty")
+        
     return {entry["slack_channel"]: (entry["repositories"], __parse_filters(entry)) for entry in config["notifications"]}
 
 
