@@ -56,7 +56,7 @@ def create_pull_request_info(pull_request: PullRequest) -> PullRequestInfo:
         url=pull_request.html_url,
         additions=pull_request.additions,
         deletions=pull_request.deletions,
-        changed_files=pull_request.changed_files
+        changed_files=pull_request.changed_files,
     )
 
 
