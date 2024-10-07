@@ -1,0 +1,16 @@
+{
+    "notifications": [
+		{
+			"slack_channel": "test-slack-channel1",
+			"repositories": ["testUser1/test-repo1"],
+			"pull_request_filters": {
+				"authors": ["testUser1"],
+				"include_drafts": false
+			}
+		},
+		{
+			"slack_channel": "test-slack-channel2",
+			"repositories": ["testUser2/test-repo2", "testUser2/test-repo3"]
+		}
+	]
+}

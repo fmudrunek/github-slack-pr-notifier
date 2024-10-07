@@ -64,18 +64,16 @@ class PullRequestFilter(ABC):
     def applies(self, pull_request: PullRequest) -> bool:
         pass
 
-
+@dataclass(frozen=True, slots=True)
 class AuthorFilter(PullRequestFilter):
-    def __init__(self, authors: list[str]) -> None:
-        self.authors = authors
+    authors: list[str]
 
     def applies(self, pull_request: PullRequest) -> bool:
         return not self.authors or pull_request.user.login in self.authors
 
-
+@dataclass(frozen=True, slots=True)
 class DraftFilter(PullRequestFilter):
-    def __init__(self, include_drafts: bool) -> None:
-        self.include_drafts = include_drafts
+    include_drafts: bool
 
     def applies(self, pull_request: PullRequest) -> bool:
         return self.include_drafts or pull_request.draft is False
