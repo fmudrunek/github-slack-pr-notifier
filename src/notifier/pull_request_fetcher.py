@@ -1,13 +1,12 @@
 import asyncio
 import logging
 from itertools import batched
-from typing import List
 
 from github import Auth, Github, UnknownObjectException
 from github.GithubException import GithubException
 from github.PaginatedList import PaginatedList
 from github.PullRequest import PullRequest
-from repository import (
+from notifier.repository import (
     PullRequestFilter,
     PullRequestInfo,
     RepositoryInfo,
@@ -25,7 +24,7 @@ class PullRequestFetcher:
         auth = Auth.Token(token)
         self.__github = Github(base_url=github_url, auth=auth, retry=3, pool_size=CONNECTION_POOL_SIZE)
 
-    def get_repository_info(self, repository_name: str, pull_request_filters: List[PullRequestFilter]) -> RepositoryInfo:
+    def get_repository_info(self, repository_name: str, pull_request_filters: list[PullRequestFilter]) -> RepositoryInfo:
         LOG.info("Fetching data for repository %s from %s", repository_name, self.__github_url)
         try:
             repo = self.__github.get_repo(repository_name)
@@ -41,14 +40,14 @@ class PullRequestFetcher:
         return RepositoryInfo(name=repository_name, pulls=filtered_pull_requests)
 
     def __filter_pull_requests(
-        self, pull_requests: PaginatedList[PullRequest], pull_request_filters: List[PullRequestFilter]
-    ) -> List[PullRequestInfo]:
+        self, pull_requests: PaginatedList[PullRequest], pull_request_filters: list[PullRequestFilter]
+    ) -> list[PullRequestInfo]:
         filtered = [pull_request for pull_request in pull_requests if all(filter.applies(pull_request) for filter in pull_request_filters)]
         LOG.info("Filtered down to %d Pull Requests", len(filtered))
         pr_infos = asyncio.run(self.__to_pull_request_infos(filtered))
         return pr_infos
 
-    async def __to_pull_request_infos(self, pull_requests: List[PullRequest]) -> List[PullRequestInfo]:
+    async def __to_pull_request_infos(self, pull_requests: list[PullRequest]) -> list[PullRequestInfo]:
         result = []
         for batch in batched(pull_requests, CONNECTION_POOL_SIZE):
             result.extend(await asyncio.gather(*[self.__to_pull_request_info(pull_request) for pull_request in batch]))

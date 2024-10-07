@@ -85,7 +85,7 @@ For added convenience, a Docker Compose file is available to automatically build
 1. Follow the [Development](#development) section to set up your virtual environment and install dependencies.
 2. Run the app. It will be looking into `./resources/config.json` for the configuration.
 
-        poetry run python .\src\notifier\main.py
+        poetry run python .\src\main.py
 
 
 ### How to change the name, icon and description of the Slack bot

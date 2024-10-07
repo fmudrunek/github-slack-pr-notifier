@@ -1,10 +1,9 @@
 import logging
-from typing import List
 
-from repository import RepositoryInfo
+from notifier.repository import RepositoryInfo
+from notifier.summary_formatter import SummaryMessageFormatter
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
-from summary_formatter import SummaryMessageFormatter
 
 # TODO notification_formatter should have a (interface) type
 
@@ -20,7 +19,7 @@ class SlackBlockNotifier:
         self.client = WebClient(token=oauth_token)
         self.notification_formatter = notification_formatter
 
-    def send_message(self, channel_name: str, repositories: List[RepositoryInfo]) -> None:
+    def send_message(self, channel_name: str, repositories: list[RepositoryInfo]) -> None:
         try:
             LOG.info("Sending message to channel #%s", channel_name)
             result = self.client.chat_postMessage(

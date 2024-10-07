@@ -1,18 +1,17 @@
 import logging
 from pathlib import Path
-from typing import Dict, List
 
-import properties
-from pull_request_fetcher import PullRequestFetcher
-from repository import RepositoryInfo
-from slack_notifier import SlackBlockNotifier
-from summary_formatter import SummaryMessageFormatter
+from notifier import properties
+from notifier.pull_request_fetcher import PullRequestFetcher
+from notifier.repository import RepositoryInfo
+from notifier.slack_notifier import SlackBlockNotifier
+from notifier.summary_formatter import SummaryMessageFormatter
 
 # TODO rewrite to __main__.py or call this main() from it
 
 LOG = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s (%(filename)s:%(lineno)d) %(message)s", datefmt="%d-%m-%y %H:%M:%S")
-root_dir = Path(__file__).resolve().parents[2]
+root_dir = Path(__file__).resolve().parents[1]
 
 
 def main() -> None:
@@ -21,7 +20,7 @@ def main() -> None:
 
     fetcher = PullRequestFetcher(properties.get_github_api_url(), properties.get_github_token())
 
-    channel_repositories: dict[str, List[RepositoryInfo]] = {}
+    channel_repositories: dict[str, list[RepositoryInfo]] = {}
     for channel, channel_config in slack_repositories_config.items():
         (repository_names, pr_filters) = channel_config
         channel_repositories[channel] = [fetcher.get_repository_info(repo_name, pr_filters) for repo_name in repository_names]
@@ -34,7 +33,7 @@ def main() -> None:
         slack_notifier.send_message(channel, repositories)
 
 
-def __filter_non_empty(channel_to_repository: Dict[str, List[RepositoryInfo]]) -> Dict[str, List[RepositoryInfo]]:
+def __filter_non_empty(channel_to_repository: dict[str, list[RepositoryInfo]]) -> dict[str, list[RepositoryInfo]]:
     return {
         channel: [repo for repo in repositories if repo.pulls]  # filter repositories with some PRs
         for (channel, repositories) in channel_to_repository.items()

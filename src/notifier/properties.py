@@ -1,10 +1,10 @@
 import json
 import os
 from pathlib import Path
-from typing import Any, Dict, List, TypeAlias
+from typing import Any, TypeAlias
 
 from dotenv import load_dotenv
-from repository import AuthorFilter, DraftFilter, PullRequestFilter
+from notifier.repository import AuthorFilter, DraftFilter, PullRequestFilter
 
 load_dotenv()
 
@@ -27,10 +27,10 @@ def get_github_api_url() -> str:
     return __get_env("GITHUB_REST_API_URL")
 
 
-ChannelConfig: TypeAlias = tuple[List[str], List[PullRequestFilter]]  # (repository_names, pull_request_filters)
+ChannelConfig: TypeAlias = tuple[list[str], list[PullRequestFilter]]  # (repository_names, pull_request_filters)
 
 
-def read_config(config_path: Path) -> Dict[str, ChannelConfig]:
+def read_config(config_path: Path) -> dict[str, ChannelConfig]:
     try:
         with open(config_path) as json_data_file:
             config = json.load(json_data_file)
@@ -47,12 +47,12 @@ def read_config(config_path: Path) -> Dict[str, ChannelConfig]:
     return {entry["slack_channel"]: (entry["repositories"], __parse_filters(entry)) for entry in config["notifications"]}
 
 
-def __parse_filters(config_entry: Any) -> List[PullRequestFilter]:
+def __parse_filters(config_entry: Any) -> list[PullRequestFilter]:
     if "pull_request_filters" not in config_entry:
         return []
 
     filters = config_entry["pull_request_filters"]
-    result = []
+    result: list[PullRequestFilter] = []
     if "authors" in filters:
         result.append(AuthorFilter(filters["authors"]))
     if "include_drafts" in filters:

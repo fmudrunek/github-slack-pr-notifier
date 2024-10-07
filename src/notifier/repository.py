@@ -4,7 +4,6 @@ import math
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import List
 
 from github.PaginatedList import PaginatedList
 from github.PullRequest import PullRequest
@@ -16,7 +15,7 @@ class PullRequestInfo:
     name: str
     author: str
     created_at: datetime
-    age: tuple[int, int]
+    age: tuple[int, int]    # (days, hours)
     review_status: str
     url: str
     additions: int
@@ -27,7 +26,7 @@ class PullRequestInfo:
 @dataclass(frozen=True, slots=True)
 class RepositoryInfo:
     name: str
-    pulls: List[PullRequestInfo]
+    pulls: list[PullRequestInfo]
 
 
 def __get_age(from_when: datetime) -> tuple[int, int]:
@@ -67,7 +66,7 @@ class PullRequestFilter(ABC):
 
 
 class AuthorFilter(PullRequestFilter):
-    def __init__(self, authors: List[str]) -> None:
+    def __init__(self, authors: list[str]) -> None:
         self.authors = authors
 
     def applies(self, pull_request: PullRequest) -> bool:

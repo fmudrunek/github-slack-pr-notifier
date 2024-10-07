@@ -1,7 +1,7 @@
 import json
-from typing import Any, List, TypeAlias
+from typing import Any, TypeAlias
 
-from repository import PullRequestInfo, RepositoryInfo
+from notifier.repository import PullRequestInfo, RepositoryInfo
 
 """
 Formats the summary message for Slack using Slack's Block Kit format (instead of Markdown which is simpler but less capable)
@@ -59,7 +59,7 @@ class SummaryMessageFormatter:
             },
         ]
 
-    def get_summary_blocks(self, repos: List[RepositoryInfo]) -> str:
+    def get_summary_blocks(self, repos: list[RepositoryInfo]) -> str:
         result = []
         repo_blocks = [self.__format_repository(repo) for repo in repos]
         for repo_block in repo_blocks:
