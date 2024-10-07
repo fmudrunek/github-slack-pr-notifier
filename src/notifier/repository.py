@@ -15,7 +15,7 @@ class PullRequestInfo:
     name: str
     author: str
     created_at: datetime
-    age: tuple[int, int]    # (days, hours)
+    age: tuple[int, int]  # (days, hours)
     review_status: str
     url: str
     additions: int
@@ -64,12 +64,14 @@ class PullRequestFilter(ABC):
     def applies(self, pull_request: PullRequest) -> bool:
         pass
 
+
 @dataclass(frozen=True, slots=True)
 class AuthorFilter(PullRequestFilter):
     authors: list[str]
 
     def applies(self, pull_request: PullRequest) -> bool:
         return not self.authors or pull_request.user.login in self.authors
+
 
 @dataclass(frozen=True, slots=True)
 class DraftFilter(PullRequestFilter):

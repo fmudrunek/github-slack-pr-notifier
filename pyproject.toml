@@ -36,6 +36,11 @@ profile = "black"
 
 [tool.black]
 line-length = 150
+extend-exclude = '''
+/(
+    tests
+)/
+'''
 
 [tool.mypy]
 strict = true

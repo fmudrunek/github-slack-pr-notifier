@@ -6,6 +6,7 @@ from github import Auth, Github, UnknownObjectException
 from github.GithubException import GithubException
 from github.PaginatedList import PaginatedList
 from github.PullRequest import PullRequest
+
 from notifier.repository import (
     PullRequestFilter,
     PullRequestInfo,

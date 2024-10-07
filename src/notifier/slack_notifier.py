@@ -1,9 +1,10 @@
 import logging
 
-from notifier.repository import RepositoryInfo
-from notifier.summary_formatter import SummaryMessageFormatter
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
+
+from notifier.repository import RepositoryInfo
+from notifier.summary_formatter import SummaryMessageFormatter
 
 # TODO notification_formatter should have a (interface) type
 

@@ -19,14 +19,16 @@ def main() -> None:
 
     fetcher = PullRequestFetcher(properties.get_github_api_url(), properties.get_github_token())
     slack_notifier = SlackBlockNotifier(properties.get_slack_oauth_token(), SummaryMessageFormatter())
-    
+
     run_notifier(slack_repositories_config, fetcher.get_repository_info, slack_notifier.send_message)
 
 
-def run_notifier(slack_repositories_config: dict[str, properties.ChannelConfig],
-                 get_repository_info: Callable[[str, list[PullRequestFilter]], RepositoryInfo],
-                 send_message: Callable[[str, list[RepositoryInfo]], None]) -> None:
-    
+def run_notifier(
+    slack_repositories_config: dict[str, properties.ChannelConfig],
+    get_repository_info: Callable[[str, list[PullRequestFilter]], RepositoryInfo],
+    send_message: Callable[[str, list[RepositoryInfo]], None],
+) -> None:
+
     channel_repositories: dict[str, list[RepositoryInfo]] = {}
     for channel, channel_config in slack_repositories_config.items():
         (repository_names, pr_filters) = channel_config
@@ -44,7 +46,6 @@ def __filter_non_empty(channel_to_repository: dict[str, list[RepositoryInfo]]) -
         for (channel, repositories) in channel_to_repository.items()
         if any(repo.pulls for repo in repositories)  # only add channel if it has at least one repo with PRs
     }
-
 
 
 if __name__ == "__main__":

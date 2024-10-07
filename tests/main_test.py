@@ -1,10 +1,15 @@
 from datetime import datetime
 from typing import Any
-from main import __filter_non_empty
-from notifier.repository import AuthorFilter, DraftFilter, PullRequestFilter, PullRequestInfo, RepositoryInfo
 from unittest.mock import Mock
-from notifier.repository import RepositoryInfo
-from main import run_notifier
+
+from main import __filter_non_empty, run_notifier
+from notifier.repository import (
+    AuthorFilter,
+    DraftFilter,
+    PullRequestFilter,
+    PullRequestInfo,
+    RepositoryInfo,
+)
 
 
 def test_filter_empty_messages() -> None:

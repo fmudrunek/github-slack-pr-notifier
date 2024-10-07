@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any, TypeAlias
 
 from dotenv import load_dotenv
+
 from notifier.repository import AuthorFilter, DraftFilter, PullRequestFilter
 
 load_dotenv()
