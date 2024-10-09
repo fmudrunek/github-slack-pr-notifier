@@ -1,7 +1,9 @@
 from unittest.mock import Mock
+
 import pytest
 
 from notifier.repository import TitleFilter
+
 
 def test_title_filter_regex() -> None:
     title_regex = r"^PR-\d+:"

@@ -16,7 +16,7 @@ regex = "^2024.9.11"
 [tool.poetry.group.dev.dependencies]
 black = "^24.4.2"
 isort = "^5.13.2"
-poethepoet = "^0.27.0"
+poethepoet = "^0.29.0"
 pytest = "^8.3.2"
 pytest-pylint = "^0.21.0"
 mypy = "^1.11.1"

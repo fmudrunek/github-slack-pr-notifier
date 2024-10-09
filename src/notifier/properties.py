@@ -5,7 +5,12 @@ from typing import Any, TypeAlias
 
 from dotenv import load_dotenv
 
-from notifier.repository import AuthorFilter, DraftFilter, PullRequestFilter, TitleFilter
+from notifier.repository import (
+    AuthorFilter,
+    DraftFilter,
+    PullRequestFilter,
+    TitleFilter,
+)
 
 load_dotenv()
 
