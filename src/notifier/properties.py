@@ -5,7 +5,7 @@ from typing import Any, TypeAlias
 
 from dotenv import load_dotenv
 
-from notifier.repository import AuthorFilter, DraftFilter, PullRequestFilter
+from notifier.repository import AuthorFilter, DraftFilter, PullRequestFilter, TitleFilter
 
 load_dotenv()
 
@@ -58,5 +58,7 @@ def __parse_filters(config_entry: Any) -> list[PullRequestFilter]:
         result.append(AuthorFilter(filters["authors"]))
     if "include_drafts" in filters:
         result.append(DraftFilter(filters["include_drafts"]))
+    if "title_regex" in filters:
+        result.append(TitleFilter(filters["title_regex"]))
 
     return result

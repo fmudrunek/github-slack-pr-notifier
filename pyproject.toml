@@ -11,7 +11,7 @@ python = "^3.12"
 slack-sdk = "^3.31.0"
 PyGithub = "^2.3.0"
 python-dotenv = "^1.0.1"
-
+regex = "^2024.9.11"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.4.2"

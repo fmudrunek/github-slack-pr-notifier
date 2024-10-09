@@ -45,7 +45,8 @@ See [config_example.json](./config_example.json)
 			"repositories": ["fmudrunek/github-slack-pr-notifier"],
 			"pull_request_filters": {
 				"authors": ["fmudrunek"],
-				"include_drafts": false
+				"include_drafts": false,
+                "title_regex": "^EG-"
 			}
 		},
 		{
@@ -61,6 +62,7 @@ The `pull_request_filters` object is optional. If it is present, the app will on
 Available filters:
 * `authors` - a list of Github usernames. If present, the app will only post summaries for pull requests created by the specified users.
 * `include_drafts` - a boolean. If `true`, the app will post summaries for draft pull requests. If `false`, the app will ignore draft pull requests.
+* `title_regex` - if present, only pull requests with titles that match the regex will be posted. Commonly used to filter by e.g. Jira project ticket prefix. E.g. `"title_regex": "^EG-"` will only show PRs starting with `EG-`.
 
 ### How to run
 Before you run the app, make sure you have already setup the `.env` file and the `config.json` file.

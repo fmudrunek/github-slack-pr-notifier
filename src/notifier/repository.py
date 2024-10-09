@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import regex
 import math
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 
 from github.PaginatedList import PaginatedList
@@ -79,3 +80,21 @@ class DraftFilter(PullRequestFilter):
 
     def applies(self, pull_request: PullRequest) -> bool:
         return self.include_drafts or pull_request.draft is False
+    
+@dataclass()
+class TitleFilter(PullRequestFilter):
+    title_regex: str
+    compiled_pattern: regex.Pattern = field(init=False)
+    
+    def __post_init__(self) -> None:
+        try:
+            self.compiled_pattern = regex.compile(self.title_regex)
+        except regex.error as e:
+            raise ValueError(f"The provided regex is invalid: {e}") from e
+
+    def applies(self, pull_request: PullRequest) -> bool:
+        try:
+            match = self.compiled_pattern.search(pull_request.title, timeout=0.1)   # 100ms timeout
+            return match is not None
+        except TimeoutError as e:
+            raise ValueError("The provided regex is too complex and timed out.") from e
