@@ -1,7 +1,8 @@
+import logging
 from typing import Any, TypeAlias
+
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
-import logging
 
 LOG = logging.getLogger(__name__)
 
@@ -23,6 +24,6 @@ class SlackClient:
                 unfurl_media=False,
             )
             LOG.debug("Slack responded with Result: %s", response)
-            
+
         except SlackApiError as e:
             raise ValueError(f"Failed to send message to channel #{channel_name}: {e}") from e

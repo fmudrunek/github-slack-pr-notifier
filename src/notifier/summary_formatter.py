@@ -4,6 +4,8 @@ from notifier.slack_client import SlackBlock, SlackBlockKitMessage
 """
 Formats the summary message for Slack using Slack's Block Kit format (instead of Markdown which is simpler but less capable)
 """
+
+
 class SummaryMessageFormatter:
 
     def __get_review_status(self, status: str) -> str:
@@ -21,25 +23,23 @@ class SummaryMessageFormatter:
 
         return ""
 
-   
     def get_messages_for_repo(self, repo: RepositoryInfo) -> list[SlackBlockKitMessage]:
         results = []
         for index, pull in enumerate(repo.pulls):
             formatted_pull = []
-            # Append the reposity name header to the first pull request to avoid sending the repo header as a separate message (it looks ugly) 
+            # Append the reposity name header to the first pull request to avoid sending the repo header as a separate message (it looks ugly)
             if index == 0:
                 formatted_pull.append(self.__format_repository_name_header(repo))
             formatted_pull.append(self.__format_pull_request(pull))
             results.append(formatted_pull)
-            
+
         return results
 
-    
     def __format_repository_name_header(self, repo: RepositoryInfo) -> SlackBlock:
         return {"type": "header", "text": {"type": "plain_text", "text": f"{repo.name}"}}
-    
+
     def __format_pull_request(self, pull: PullRequestInfo) -> SlackBlock:
-        
+
         def __format_pull(pull: PullRequestInfo) -> SlackBlock:
             (days_ago, hours_ago) = pull.age
             if days_ago > 0 and hours_ago >= 12:
