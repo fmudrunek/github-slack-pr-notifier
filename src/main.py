@@ -1,14 +1,14 @@
 import logging
+import time
 from pathlib import Path
 from typing import Callable
-import time
 
 from notifier import properties
 from notifier.pull_request_fetcher import PullRequestFetcher
 from notifier.repository import PullRequestFilter, RepositoryInfo
+from notifier.slack_client import SlackClient
 from notifier.slack_notifier import SlackBlockNotifier
 from notifier.summary_formatter import SummaryMessageFormatter
-from notifier.slack_client import SlackClient
 
 LOG = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s (%(filename)s:%(lineno)d) %(message)s", datefmt="%d-%m-%y %H:%M:%S")
@@ -18,17 +18,17 @@ root_dir = Path(__file__).resolve().parents[1]
 
 def main() -> None:
     start_time = time.time()
-    
+
     config_path = root_dir / "resources" / "config.json"
     slack_repositories_config = properties.read_config(config_path)
 
     fetcher = PullRequestFetcher(properties.get_github_api_url(), properties.get_github_token())
     slack_client = SlackClient(properties.get_slack_oauth_token())
-    
+
     slack_notifier = SlackBlockNotifier(slack_client, SummaryMessageFormatter())
 
     run_notifier(slack_repositories_config, fetcher.get_repository_info, slack_notifier.send_report_for_repos)
-    
+
     end_time = time.time() - start_time
     LOG.info(f"Script execution time: {int(end_time)} seconds")
 
