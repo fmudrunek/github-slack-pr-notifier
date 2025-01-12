@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "github-slack-pr-notifier"
-version = "1.3"
+version = "1.5"
 description = ""
 authors = []
 license = "MIT"
