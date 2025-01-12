@@ -26,4 +26,4 @@ class SlackClient:
             LOG.debug("Slack responded with Result: %s", response)
 
         except SlackApiError as e:
-            raise ValueError(f"Failed to send message to channel #{channel_name}: {e}") from e
+            raise ValueError(f"Failed to send message to Slack: {e}") from e

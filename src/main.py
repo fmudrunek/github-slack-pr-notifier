@@ -39,9 +39,18 @@ def run_notifier(
     send_message: Callable[[str, list[str], Callable[[str], RepositoryInfo]], None],
 ) -> None:
 
+    something_failed = False
     for channel, channel_config in slack_repositories_config.items():
         (repository_names, pr_filters) = channel_config
-        send_message(channel, repository_names, lambda repo_name: get_repository_info(repo_name, pr_filters))
+
+        try:
+            send_message(channel, repository_names, lambda repo_name: get_repository_info(repo_name, pr_filters))
+        except Exception as e:
+            LOG.error("Failed to send message to channel '%s' with message: %s", channel, str(e))
+            something_failed = True
+
+    if something_failed:
+        raise ValueError("Failed to send some of the messages. See Errors in the logs above for more details.")
 
 
 if __name__ == "__main__":

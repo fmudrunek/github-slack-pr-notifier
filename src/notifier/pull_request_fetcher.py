@@ -27,7 +27,7 @@ class PullRequestFetcher:
 
     def get_repository_info(self, repository_name: str, pull_request_filters: list[PullRequestFilter]) -> RepositoryInfo:
         LOG.info("Fetching data for repository %s", repository_name)
-        
+
         # Check if we have cached data for this repository
         if (cached_pull_requests := self.__cached_pull_requests_for_repos.get(repository_name)) is not None:
             LOG.info("|-> Using cached data for this repo")
@@ -36,26 +36,24 @@ class PullRequestFetcher:
             try:
                 repo = self.__github.get_repo(repository_name)
             except UnknownObjectException as e:
-                raise ValueError(f"|-> Failed to find repository '{repository_name}' in {self.__github_url}", e) from e
+                raise ValueError(f"Failed to find repository '{repository_name}' in {self.__github_url}", e) from e
             except GithubException as e:
-                raise ValueError(f"|-> Failed to retrieve data from {self.__github_url}", e) from e
+                raise ValueError(f"Failed to retrieve data from {self.__github_url}", e) from e
 
             pull_requests = repo.get_pulls(state="open", sort="created")
             self.__cached_pull_requests_for_repos[repository_name] = pull_requests
-            
-            
+
         LOG.info("|-> Found %d open Pull Requests", pull_requests.totalCount)
 
         filtered_pull_requests = self.__filter_pull_requests(pull_requests, pull_request_filters)
         return RepositoryInfo(name=repository_name, pulls=filtered_pull_requests)
 
-
     def __filter_pull_requests(
         self, pull_requests: PaginatedList[PullRequest], pull_request_filters: list[PullRequestFilter]
     ) -> list[PullRequestInfo]:
-        if (pull_requests.totalCount == 0):
+        if pull_requests.totalCount == 0:
             return []
-        
+
         filtered = [pull_request for pull_request in pull_requests if all(filter.applies(pull_request) for filter in pull_request_filters)]
         LOG.info("|-> Filtered down to %d Pull Requests", len(filtered))
         pr_infos = asyncio.run(self.__to_pull_request_infos(filtered))
