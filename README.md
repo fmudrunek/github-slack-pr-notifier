@@ -46,7 +46,7 @@ See [config_example.json](./config_example.json)
 			"pull_request_filters": {
 				"authors": ["fmudrunek"],
 				"include_drafts": false,
-                "title_regex": "^EG-"
+                		"title_regex": "^EG-"
 			}
 		},
 		{
