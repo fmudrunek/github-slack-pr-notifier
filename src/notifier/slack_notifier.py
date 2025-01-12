@@ -1,36 +1,18 @@
-import logging
-
-from slack_sdk import WebClient
-from slack_sdk.errors import SlackApiError
-
 from notifier.repository import RepositoryInfo
 from notifier.summary_formatter import SummaryMessageFormatter
+from notifier.slack_client import SlackClient
 
-# TODO notification_formatter should have a (interface) type
-
-LOG = logging.getLogger(__name__)
 
 """
 Sending messages to Slack channels using Slack API and the Block Kit formatting.
 """
-
-
 class SlackBlockNotifier:
-    def __init__(self, oauth_token: str, notification_formatter: SummaryMessageFormatter):
-        self.client = WebClient(token=oauth_token)
+    def __init__(self, slack_client: SlackClient, notification_formatter: SummaryMessageFormatter):
+        self.client = slack_client
         self.notification_formatter = notification_formatter
 
-    def send_message(self, channel_name: str, repositories: list[RepositoryInfo]) -> None:
-        try:
-            LOG.info("Sending message to channel #%s", channel_name)
-            result = self.client.chat_postMessage(
-                channel=channel_name,
-                blocks=self.notification_formatter.get_summary_blocks(repositories),
-                text="Failed to render content",  # this is a fallback message in case the blocks are not rendered
-                unfurl_links=False,
-                unfurl_media=False,
-            )
-            LOG.debug("Slack responded with Result: %s", result)
-
-        except SlackApiError as e:
-            raise ValueError(f"Failed to send message to channel #{channel_name}: {e}") from e
+    def send_report_for_repos(self, channel_name: str, repositories: list[RepositoryInfo]) -> None:
+        for repo in repositories:
+            messages = self.notification_formatter.get_messages_for_repo(repo)
+            for message in messages:
+                self.client.send_message_from_blocks(channel_name, message)
