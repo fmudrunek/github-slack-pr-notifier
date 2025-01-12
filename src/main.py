@@ -30,7 +30,7 @@ def main() -> None:
     run_notifier(slack_repositories_config, fetcher.get_repository_info, slack_notifier.send_report_for_repos)
 
     end_time = time.time() - start_time
-    LOG.info(f"Script execution time: {int(end_time)} seconds")
+    LOG.info("Script execution time: %d seconds", int(end_time))
 
 
 def run_notifier(
