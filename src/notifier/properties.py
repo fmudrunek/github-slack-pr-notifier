@@ -50,7 +50,16 @@ def read_config(config_path: Path) -> dict[str, ChannelConfig]:
     if not config:
         raise ValueError(f"Config file {config_path} is empty")
 
-    return {entry["slack_channel"]: (entry["repositories"], __parse_filters(entry)) for entry in config["notifications"]}
+    return {entry["slack_channel"]: (__parse_repositories(entry), __parse_filters(entry)) for entry in config["notifications"]}
+
+
+def __parse_repositories(config_entry: dict) -> list[str]:
+    result = []
+    for repo in config_entry["repositories"]:
+        trimmed = repo.strip()
+        if trimmed not in result:
+            result.append(trimmed)
+    return result
 
 
 def __parse_filters(config_entry: Any) -> list[PullRequestFilter]:
@@ -60,7 +69,12 @@ def __parse_filters(config_entry: Any) -> list[PullRequestFilter]:
     filters = config_entry["pull_request_filters"]
     result: list[PullRequestFilter] = []
     if "authors" in filters:
-        result.append(AuthorFilter(filters["authors"]))
+        trimmed_authors = []
+        for a in filters["authors"]:
+            trimmed = a.strip()
+            if trimmed not in trimmed_authors:
+                trimmed_authors.append(trimmed)
+        result.append(AuthorFilter(trimmed_authors))
     if "include_drafts" in filters:
         result.append(DraftFilter(filters["include_drafts"]))
     if "title_regex" in filters:

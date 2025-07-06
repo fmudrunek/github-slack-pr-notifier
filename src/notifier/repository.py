@@ -38,8 +38,34 @@ def __get_age(from_when: datetime) -> tuple[int, int]:
     return (days, hours)
 
 
-def __get_review_status(reviews: PaginatedList[PullRequestReview]) -> str:
-    return str(reviews.reversed[0].state) if reviews.totalCount > 0 else "WAITING"
+def __get_review_status(reviews: PaginatedList[PullRequestReview], required_reviewers: list[str] = None) -> str:
+    if reviews.totalCount == 0:
+        return "WAITING"
+    latest_reviews = {}
+    for review in reviews:
+        reviewer = review.user.login
+        latest_reviews[reviewer] = review
+    if not latest_reviews:
+        return "WAITING"
+    # If required reviewers are specified, only consider their reviews
+    if required_reviewers is not None:
+        # Check for missing reviews
+        for req in required_reviewers:
+            if req not in latest_reviews:
+                return "WAITING"
+        # Check for changes requested
+        if any(latest_reviews[req].state == "CHANGES_REQUESTED" for req in required_reviewers):
+            return "CHANGES_REQUESTED"
+        # All must be approved
+        if all(latest_reviews[req].state == "APPROVED" for req in required_reviewers):
+            return "APPROVED"
+        return "WAITING"
+    # Fallback: consider all reviewers
+    if any(r.state == "CHANGES_REQUESTED" for r in latest_reviews.values()):
+        return "CHANGES_REQUESTED"
+    if all(r.state == "APPROVED" for r in latest_reviews.values()):
+        return "APPROVED"
+    return "WAITING"
 
 
 def create_pull_request_info(pull_request: PullRequest) -> PullRequestInfo:
@@ -47,12 +73,19 @@ def create_pull_request_info(pull_request: PullRequest) -> PullRequestInfo:
     Creates a PullRequestInfo from a PullRequest
     Note that this method does network I/O - it calls the GitHub API to fetch the reviews for given Pull Request.
     """
+    # Fetch required reviewers (users only)
+    required_reviewers = []
+    try:
+        reqs = pull_request.get_review_requests()[0]  # returns (users, teams)
+        required_reviewers = [user.login for user in reqs]
+    except Exception:
+        pass
     return PullRequestInfo(
         name=pull_request.title,
         author=pull_request.user.login,
         created_at=pull_request.created_at,
         age=__get_age(pull_request.created_at),
-        review_status=__get_review_status(pull_request.get_reviews()),
+        review_status=__get_review_status(pull_request.get_reviews(), required_reviewers),
         url=pull_request.html_url,
         additions=pull_request.additions,
         deletions=pull_request.deletions,

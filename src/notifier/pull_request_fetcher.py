@@ -54,7 +54,13 @@ class PullRequestFetcher:
         if pull_requests.totalCount == 0:
             return []
 
-        filtered = [pull_request for pull_request in pull_requests if all(filter.applies(pull_request) for filter in pull_request_filters)]
+        filtered = []
+        for pull_request in pull_requests:
+            for filter in pull_request_filters:
+                if not filter.applies(pull_request):
+                    break
+            else:
+                filtered.append(pull_request)
         LOG.info("|-> Filtered down to %d Pull Requests", len(filtered))
         pr_infos = asyncio.run(self.__to_pull_request_infos(filtered))
         return pr_infos
