@@ -1,7 +1,7 @@
 import json
 import os
 from pathlib import Path
-from typing import Any, TypeAlias
+from typing import Any, TypeAlias, TypedDict, Union
 
 from dotenv import load_dotenv
 
@@ -33,10 +33,20 @@ def get_github_api_url() -> str:
     return __get_env("GITHUB_REST_API_URL")
 
 
-ChannelConfig: TypeAlias = tuple[list[str], list[PullRequestFilter]]  # (repository_names, pull_request_filters)
+class PullRequestConfig(TypedDict):
+    repositories: list[str]
+    filters: list[PullRequestFilter]
+
+class ProductivityConfig(TypedDict):
+    repositories: list[str]
+    team_members: list[str]
+    time_window_days: int
+
+ChannelConfig = Union[PullRequestConfig, ProductivityConfig]
+NotificationConfig: TypeAlias = tuple[str, ChannelConfig]  # (notification_type, config)
 
 
-def read_config(config_path: Path) -> dict[str, ChannelConfig]:
+def read_config(config_path: Path) -> dict[str, NotificationConfig]:
     try:
         with open(config_path) as json_data_file:
             config = json.load(json_data_file)
@@ -50,10 +60,52 @@ def read_config(config_path: Path) -> dict[str, ChannelConfig]:
     if not config:
         raise ValueError(f"Config file {config_path} is empty")
 
-    return {entry["slack_channel"]: (__parse_repositories(entry), __parse_filters(entry)) for entry in config["notifications"]}
+    result: dict[str, NotificationConfig] = {}
+    for entry in config["notifications"]:
+        channel_name = entry["slack_channel"]
+        notification_type = entry.get("type", "pull_requests")  # Default to pull_requests for backward compatibility
+        
+        if notification_type == "pull_requests":
+            pr_config: PullRequestConfig = {
+                "repositories": __parse_repositories(entry),
+                "filters": __parse_filters(entry)
+            }
+            result[channel_name] = (notification_type, pr_config)
+        elif notification_type == "team_productivity":
+            repositories = __parse_repositories(entry)
+            team_members = __parse_team_members(entry)
+            time_window_days = entry.get("time_window_days", 14)
+            if not isinstance(time_window_days, int) or time_window_days <= 0:
+                raise ValueError("time_window_days must be a positive integer")
+            prod_typed_config: ProductivityConfig = {
+                "repositories": repositories,
+                "team_members": team_members,
+                "time_window_days": time_window_days
+            }
+            result[channel_name] = (notification_type, prod_typed_config)
+        else:
+            raise ValueError(f"Unknown notification type: {notification_type}")
+    
+    return result
 
 
-def __parse_repositories(config_entry: dict) -> list[str]:
+def __parse_team_members(config_entry: dict[str, Any]) -> list[str]:
+    if "team_members" not in config_entry:
+        raise ValueError("team_productivity notifications require 'team_members' field")
+    
+    team_members = []
+    for member in config_entry["team_members"]:
+        trimmed = member.strip()
+        if trimmed and trimmed not in team_members:
+            team_members.append(trimmed)
+    
+    if not team_members:
+        raise ValueError("team_productivity notifications require at least one team member")
+    
+    return team_members
+
+
+def __parse_repositories(config_entry: dict[str, Any]) -> list[str]:
     result = []
     for repo in config_entry["repositories"]:
         trimmed = repo.strip()

@@ -22,9 +22,9 @@ def test_config_parsing() -> None:
     test_config_path = get_test_config_path()
     actual_parsed_config = properties.read_config(test_config_path)
 
-    expected_parsed_config: dict[str, properties.ChannelConfig] = {
-        "test-slack-channel1": (["testUser1/test-repo1"], [AuthorFilter(["testUser1"]), DraftFilter(False)]),
-        "test-slack-channel2": (["testUser2/test-repo2", "testUser2/test-repo3"], []),
+    expected_parsed_config: dict[str, properties.NotificationConfig] = {
+        "test-slack-channel1": ("pull_requests", {"repositories": ["testUser1/test-repo1"], "filters": [AuthorFilter(["testUser1"]), DraftFilter(False)]}),
+        "test-slack-channel2": ("pull_requests", {"repositories": ["testUser2/test-repo2", "testUser2/test-repo3"], "filters": []}),
     }
 
     assert actual_parsed_config == expected_parsed_config
@@ -45,8 +45,11 @@ def test_trimming_and_deduplication_of_repositories_and_authors(tmp_path):
     }
     config_path = create_config_file(tmp_path, config)
     parsed = properties.read_config(config_path)
-    assert parsed["test-channel"][0] == ["repo1", "repo2"]  # repositories trimmed and deduplicated, order preserved
-    filters = parsed["test-channel"][1]
+    notification_type, config = parsed["test-channel"]
+    assert notification_type == "pull_requests"
+    repositories = config["repositories"]
+    filters = config["filters"]
+    assert repositories == ["repo1", "repo2"]  # repositories trimmed and deduplicated, order preserved
     assert any(isinstance(f, AuthorFilter) and f.authors == ["alice", "bob"] for f in filters)
     assert any(isinstance(f, DraftFilter) and f.include_drafts is True for f in filters)
 
@@ -61,8 +64,12 @@ def test_missing_pull_request_filters(tmp_path):
     }
     config_path = create_config_file(tmp_path, config)
     parsed = properties.read_config(config_path)
-    assert parsed["chan"][0] == ["repo"]
-    assert parsed["chan"][1] == []
+    notification_type, config = parsed["chan"]
+    assert notification_type == "pull_requests"
+    repositories = config["repositories"]
+    filters = config["filters"]
+    assert repositories == ["repo"]
+    assert filters == []
 
 def test_invalid_json(tmp_path):
     bad_json = "not json"
