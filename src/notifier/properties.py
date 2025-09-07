@@ -77,12 +77,12 @@ def read_config(config_path: Path) -> dict[str, NotificationConfig]:
             time_window_days = entry.get("time_window_days", 14)
             if not isinstance(time_window_days, int) or time_window_days <= 0:
                 raise ValueError("time_window_days must be a positive integer")
-            prod_typed_config: ProductivityConfig = {
+            productivity_config: ProductivityConfig = {
                 "repositories": repositories,
                 "team_members": team_members,
                 "time_window_days": time_window_days
             }
-            result[channel_name] = (notification_type, prod_typed_config)
+            result[channel_name] = (notification_type, productivity_config)
         else:
             raise ValueError(f"Unknown notification type: {notification_type}")
     
