@@ -1,6 +1,7 @@
 {
 	"notifications": [
 		{
+			"type": "pull_requests",
 			"slack_channel": "notifier-integration-test",
 			"repositories": ["fmudrunek/github-slack-pr-notifier"],
 			"pull_request_filters": {
@@ -8,8 +9,16 @@
 			}
 		},
 		{
+			"type": "pull_requests",
 			"slack_channel": "notifier-integration-test-2",
 			"repositories": ["PyGithub/PyGithub", "adam-p/markdown-here"]
+		},
+		{
+			"type": "team_productivity",
+			"slack_channel": "team-metrics",
+			"repositories": ["fmudrunek/github-slack-pr-notifier"],
+			"team_members": ["fmudrunek", "alice", "bob"],
+			"time_window_days": 7
 		}
 	]
 }

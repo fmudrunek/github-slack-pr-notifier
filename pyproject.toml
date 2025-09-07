@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "github-slack-pr-notifier"
-version = "1.5"
+version = "2.0"
 description = ""
 authors = []
 license = "MIT"
@@ -8,19 +8,19 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-slack-sdk = "^3.31.0"
-PyGithub = "^2.3.0"
-python-dotenv = "^1.0.1"
-regex = "^2024.9.11"
+slack-sdk = "^3.36.0"
+PyGithub = "^2.8.1"
+python-dotenv = "^1.1.1"
+regex = "^2025.9.1"
 
 [tool.poetry.group.dev.dependencies]
-black = "^24.4.2"
-isort = "^5.13.2"
-poethepoet = "^0.29.0"
-pytest = "^8.3.2"
+black = "^25.1.0"
+isort = "^6.0.1"
+poethepoet = "^0.37.0"
+pytest = "^8.4.2"
 pytest-pylint = "^0.21.0"
-mypy = "^1.11.1"
-pytest-mypy = "^0.10.3"
+mypy = "^1.17.1"
+pytest-mypy = "^1.0.1"
 
 [tool.poe.tasks]
 _black = "black ."

@@ -1,7 +1,6 @@
-import pytest
 from unittest.mock import Mock
 
-from notifier.repository import _PullRequestInfo__get_review_status as get_review_status
+from notifier.repository import __get_review_status as get_review_status
 
 class DummyReview:
     def __init__(self, user, state):

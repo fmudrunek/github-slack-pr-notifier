@@ -30,6 +30,24 @@ class RepositoryInfo:
     pulls: list[PullRequestInfo]
 
 
+@dataclass(frozen=True, slots=True)
+class RepositoryProductivityMetrics:
+    repository_name: str
+    merged_prs_count: int
+    lines_added: int
+    lines_deleted: int
+
+
+@dataclass(frozen=True, slots=True)
+class TeamProductivityMetrics:
+    time_window_days: int
+    total_merged_prs: int
+    total_lines_added: int
+    total_lines_deleted: int
+    repository_breakdown: list[RepositoryProductivityMetrics]
+    reviewer_approvals: dict[str, int]  # username -> approval count
+
+
 def __get_age(from_when: datetime) -> tuple[int, int]:
     now = datetime.now(timezone.utc)
     difference = now - from_when
@@ -38,7 +56,7 @@ def __get_age(from_when: datetime) -> tuple[int, int]:
     return (days, hours)
 
 
-def __get_review_status(reviews: PaginatedList[PullRequestReview], required_reviewers: list[str] = None) -> str:
+def __get_review_status(reviews: PaginatedList[PullRequestReview], required_reviewers: list[str] | None = None) -> str:
     if reviews.totalCount == 0:
         return "WAITING"
     latest_reviews = {}
@@ -78,7 +96,7 @@ def create_pull_request_info(pull_request: PullRequest) -> PullRequestInfo:
     try:
         reqs = pull_request.get_review_requests()[0]  # returns (users, teams)
         required_reviewers = [user.login for user in reqs]
-    except Exception:
+    except (IndexError, AttributeError):
         pass
     return PullRequestInfo(
         name=pull_request.title,
