@@ -39,6 +39,7 @@ SLACK_OAUTH_TOKEN=
 
 ### Configuration
 The app supports two types of notifications: Pull Request notifications and Team Productivity notifications.
+For a full config example see [config_example.json](./resources/config_example.json).
 
 #### Pull Request Notifications
 ```json
