@@ -10,82 +10,97 @@ class ProductivityMessageFormatter:
         # Header
         blocks.append(self.__format_header(metrics))
         
-        # Team totals section
+        # Team totals
+        blocks.append({"type": "divider"})
         blocks.append(self.__format_team_totals(metrics))
         
-        # Repository breakdown section
+        # Repository breakdown
         if metrics.repository_breakdown:
+            blocks.append({"type": "divider"})
             blocks.append(self.__format_repository_breakdown(metrics))
         
-        # Top reviewers section
+        # Top reviewers
         if metrics.reviewer_approvals:
+            blocks.append({"type": "divider"})
             blocks.append(self.__format_top_reviewers(metrics))
         
-        return [blocks]  # Return as single message with multiple blocks
+        return [blocks]
 
     def __format_header(self, metrics: TeamProductivityMetrics) -> SlackBlock:
-        repo_names = [repo.repository_name for repo in metrics.repository_breakdown]
-        repo_list = ", ".join(repo_names[:3])  # Show first 3 repos
-        if len(repo_names) > 3:
-            repo_list += f" (+{len(repo_names) - 3} more)"
-        
         return {
-            "type": "header",
+            "type": "section",
             "text": {
-                "type": "plain_text", 
-                "text": f"📊 Team Productivity Summary (Last {metrics.time_window_days} days)"
+                "type": "mrkdwn",
+                "text": f":rocket: *Team Effort Summary* in _Last {metrics.time_window_days} days_ :chart_with_upwards_trend:"
             }
         }
 
     def __format_team_totals(self, metrics: TeamProductivityMetrics) -> SlackBlock:
-        elements = [
-            {"type": "text", "text": "🎯 ", "style": {"bold": True}},
-            {"type": "text", "text": "Team Totals", "style": {"bold": True}},
-            {"type": "text", "text": f"\n• Merged PRs: {metrics.total_merged_prs}"},
-            {"type": "text", "text": f"\n• Lines Added: +{metrics.total_lines_added:,}"},
-            {"type": "text", "text": f"\n• Lines Deleted: -{metrics.total_lines_deleted:,}"}
-        ]
         
         return {
-            "type": "rich_text",
-            "elements": [{"type": "rich_text_section", "elements": elements}]
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": f":dart: *Team Totals*\n" +
+                        f":white_check_mark: *{metrics.total_merged_prs}* merged PRs\n" +
+                        f":heavy_plus_sign: *+{metrics.total_lines_added:,}* lines added\n" +
+                        f":heavy_minus_sign: *-{metrics.total_lines_deleted:,}* lines deleted\n"
+            }
         }
 
     def __format_repository_breakdown(self, metrics: TeamProductivityMetrics) -> SlackBlock:
-        elements = [
-            {"type": "text", "text": "📈 ", "style": {"bold": True}},
-            {"type": "text", "text": "Repository Breakdown", "style": {"bold": True}}
-        ]
+        repo_text = ":bar_chart: *Repository Breakdown*\n"
         
-        for repo in metrics.repository_breakdown:
-            if repo.merged_prs_count > 0:  # Only show repos with activity
-                elements.append({
-                    "type": "text", 
-                    "text": f"\n• {repo.repository_name}: {repo.merged_prs_count} PRs merged (+{repo.lines_added:,}/-{repo.lines_deleted:,} lines)"
-                })
+        active_repos = [repo for repo in metrics.repository_breakdown if repo.merged_prs_count > 0]
         
+        for repo in active_repos:
+            # Get repo name (remove org prefix for cleaner display)
+            repo_display = repo.repository_name.split('/')[-1] if '/' in repo.repository_name else repo.repository_name
+            
+            # Color code based on activity level
+            if repo.merged_prs_count >= 5:
+                pr_emoji = ":fire:"
+            elif repo.merged_prs_count >= 2:
+                pr_emoji = ":zap:"
+            else:
+                pr_emoji = ":small_blue_diamond:"
+                
+            repo_text += f"{pr_emoji} *{repo_display}*: {repo.merged_prs_count} PRs (+{repo.lines_added:,}/-{repo.lines_deleted:,})\n"
+        
+        if not active_repos:
+            repo_text += ":zzz: _No repository activity in this period_"
+            
         return {
-            "type": "rich_text",
-            "elements": [{"type": "rich_text_section", "elements": elements}]
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": repo_text.strip()
+            }
         }
 
     def __format_top_reviewers(self, metrics: TeamProductivityMetrics) -> SlackBlock:
-        elements = [
-            {"type": "text", "text": "👥 ", "style": {"bold": True}},
-            {"type": "text", "text": "Top Reviewers", "style": {"bold": True}}
-        ]
+        reviewer_text = ":trophy: *Top Reviewers*\n"
         
         # Sort reviewers by approval count (descending)
         sorted_reviewers = sorted(metrics.reviewer_approvals.items(), key=lambda x: x[1], reverse=True)
+        active_reviewers = [(username, count) for username, count in sorted_reviewers[:5] if count > 0]
         
-        for username, approval_count in sorted_reviewers[:5]:  # Show top 5 reviewers
-            if approval_count > 0:
-                elements.append({
-                    "type": "text",
-                    "text": f"\n• {username}: {approval_count} approvals"
-                })
-        
+        if not active_reviewers:
+            reviewer_text += ":thinking_face: _No reviews found in this period_"
+        else:
+            # Medal emojis for top 3
+            medals = [":first_place_medal:", ":second_place_medal:", ":third_place_medal:", ":medal:", ":medal:"]
+            
+            for i, (username, approval_count) in enumerate(active_reviewers):
+                medal = medals[i] if i < len(medals) else ":small_orange_diamond:"
+                # Pluralize approvals
+                approval_text = "approval" if approval_count == 1 else "approvals"
+                reviewer_text += f"{i+1}. {medal} *{username}*: {approval_count} {approval_text}\n"
+                
         return {
-            "type": "rich_text",
-            "elements": [{"type": "rich_text_section", "elements": elements}]
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": reviewer_text.strip()
+            }
         }
