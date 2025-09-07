@@ -134,9 +134,9 @@ class PullRequestFetcher:
         except GithubException as e:
             raise ValueError(f"Failed to retrieve data from {self.__github_url}", e) from e
 
-        # Get closed PRs (which includes merged ones) - fetch once
+        # Get closed PRs
         closed_pulls = repo.get_pulls(state="closed", sort="updated", direction="desc")
-        LOG.info("|-> Found %d closed Pull Requests", closed_pulls.totalCount)
+        LOG.info("|-> Found %d closed Pull Requests in total", closed_pulls.totalCount)
         
         merged_prs_count = 0
         lines_added = 0
@@ -148,28 +148,29 @@ class PullRequestFetcher:
             # Stop if we've gone beyond our time window
             if pr.updated_at and pr.updated_at < since_date:
                 break
-                
-            # Count merged PRs from team members
+
+            # Count merged PRs and approvals from team members
             if pr.merged and pr.user.login in team_members:
                 merged_prs_count += 1
                 lines_added += pr.additions
                 lines_deleted += pr.deletions
-            
-            # Count approvals from team members on PRs authored by team members
-            if pr.user.login in team_members:
-                LOG.info("|-> Checking reviews for PR #%d", pr.number)
+                
+                # Count approvals from team members on PRs authored by team members
                 try:
+                    LOG.info("|->|-> Checking reviews for PR #%d", pr.number)
                     reviews = pr.get_reviews()
                     for review in reviews:
                         if (review.state == "APPROVED" and 
                             review.user.login in team_members and
                             review.submitted_at and review.submitted_at >= since_date):
                             reviewer_username = review.user.login
-                            LOG.info("|--> Found approval from %s", reviewer_username)
+                            LOG.info("|->|-> Found approval from %s", reviewer_username)
                             approval_counts[reviewer_username] = approval_counts.get(reviewer_username, 0) + 1
                 except GithubException:
                     # Skip reviews for this PR if we can't access them
                     continue
+                
+                
         
         LOG.info("|-> Found %d merged PRs with +%d/-%d lines, approvals: %s", 
                 merged_prs_count, lines_added, lines_deleted, dict(approval_counts))

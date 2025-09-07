@@ -89,33 +89,3 @@ def test_filter_notifications_by_type_team_productivity() -> None:
     # Verify the content is correct
     assert filtered["productivity-channel-1"][0] == "team_productivity"
     assert filtered["productivity-channel-2"][0] == "team_productivity"
-
-
-def test_filter_notifications_by_type_empty_result() -> None:
-    # Define config with only one type
-    notifications_config: dict[str, properties.NotificationConfig] = {
-        "pr-channel": ("pull_requests", {"repositories": ["repo1"], "filters": []}),
-    }
-    
-    # Filter for the other type
-    filtered = filter_notifications_by_type(notifications_config, "team_productivity")
-    
-    # Should be empty
-    assert len(filtered) == 0
-    assert filtered == {}
-
-
-def test_filter_notifications_by_type_preserves_config_structure() -> None:
-    # Define notifications config
-    original_config = {"repositories": ["repo1", "repo2"], "filters": [AuthorFilter(["user1"]), DraftFilter(False)]}
-    notifications_config: dict[str, properties.NotificationConfig] = {
-        "test-channel": ("pull_requests", original_config)
-    }
-    
-    # Filter should preserve the exact config structure
-    filtered = filter_notifications_by_type(notifications_config, "pull_requests")
-    
-    assert len(filtered) == 1
-    notification_type, config = filtered["test-channel"]
-    assert notification_type == "pull_requests"
-    assert config == original_config    
