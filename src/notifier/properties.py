@@ -37,10 +37,12 @@ class PullRequestConfig(TypedDict):
     repositories: list[str]
     filters: list[PullRequestFilter]
 
+
 class ProductivityConfig(TypedDict):
     repositories: list[str]
     team_members: list[str]
     time_window_days: int
+
 
 ChannelConfig = Union[PullRequestConfig, ProductivityConfig]
 NotificationConfig: TypeAlias = tuple[str, ChannelConfig]  # (notification_type, config)
@@ -64,12 +66,9 @@ def read_config(config_path: Path) -> dict[str, NotificationConfig]:
     for entry in config["notifications"]:
         channel_name = entry["slack_channel"]
         notification_type = entry.get("type", "pull_requests")  # Default to pull_requests for backward compatibility
-        
+
         if notification_type == "pull_requests":
-            pr_config: PullRequestConfig = {
-                "repositories": __parse_repositories(entry),
-                "filters": __parse_filters(entry)
-            }
+            pr_config: PullRequestConfig = {"repositories": __parse_repositories(entry), "filters": __parse_filters(entry)}
             result[channel_name] = (notification_type, pr_config)
         elif notification_type == "team_productivity":
             repositories = __parse_repositories(entry)
@@ -80,28 +79,28 @@ def read_config(config_path: Path) -> dict[str, NotificationConfig]:
             productivity_config: ProductivityConfig = {
                 "repositories": repositories,
                 "team_members": team_members,
-                "time_window_days": time_window_days
+                "time_window_days": time_window_days,
             }
             result[channel_name] = (notification_type, productivity_config)
         else:
             raise ValueError(f"Unknown notification type: {notification_type}")
-    
+
     return result
 
 
 def __parse_team_members(config_entry: dict[str, Any]) -> list[str]:
     if "team_members" not in config_entry:
         raise ValueError("team_productivity notifications require 'team_members' field")
-    
+
     team_members = []
     for member in config_entry["team_members"]:
         trimmed = member.strip()
         if trimmed and trimmed not in team_members:
             team_members.append(trimmed)
-    
+
     if not team_members:
         raise ValueError("team_productivity notifications require at least one team member")
-    
+
     return team_members
 
 

@@ -1,6 +1,6 @@
 from unittest.mock import Mock
 
-from main import run_notifications, filter_notifications_by_type
+from main import filter_notifications_by_type, run_notifications
 from notifier import properties
 from notifier.repository import AuthorFilter, DraftFilter
 

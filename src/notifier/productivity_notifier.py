@@ -11,15 +11,15 @@ class ProductivityNotifier:
         self.productivity_formatter = productivity_formatter
 
     def send_productivity_report(
-        self, 
-        channel_name: str, 
-        repository_names: list[str], 
+        self,
+        channel_name: str,
+        repository_names: list[str],
         team_members: list[str],
         time_window_days: int,
-        get_team_metrics: Callable[[list[str], list[str], int], TeamProductivityMetrics]
+        get_team_metrics: Callable[[list[str], list[str], int], TeamProductivityMetrics],
     ) -> None:
         team_metrics = get_team_metrics(repository_names, team_members, time_window_days)
-        
+
         # Only send if there's meaningful data
         if team_metrics.total_merged_prs > 0 or team_metrics.reviewer_approvals:
             messages = self.productivity_formatter.get_messages_for_team_metrics(team_metrics)

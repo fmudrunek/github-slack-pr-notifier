@@ -60,11 +60,9 @@ class SummaryMessageFormatter:
             ]
 
             return {"type": "rich_text_section", "elements": [block for block in element_blocks if block]}
-        
+
         return {
             # add a bullet point to each pull request
             "type": "rich_text",
-            "elements": [
-                 {"type": "rich_text_list", "style": "bullet", "border": 1, "elements": [__format_pull(pull)]}
-             ]
+            "elements": [{"type": "rich_text_list", "style": "bullet", "border": 1, "elements": [__format_pull(pull)]}],
         }

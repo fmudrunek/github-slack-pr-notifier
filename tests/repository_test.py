@@ -2,6 +2,7 @@ from unittest.mock import Mock
 
 from notifier.repository import __get_review_status as get_review_status
 
+
 class DummyReview:
     def __init__(self, user, state):
         self.user = Mock()
@@ -10,7 +11,7 @@ class DummyReview:
 
 class DummyPaginatedList(list):
     @property
-    def totalCount(self):
+    def totalCount(self):   # pylint: disable=invalid-name
         return len(self)
 
 # Helper to create a paginated list of reviews

@@ -1,9 +1,12 @@
+import json
 from pathlib import Path
+from typing import cast
+
+import pytest
+
 from notifier import properties
 from notifier.repository import AuthorFilter, DraftFilter
-import json
-from typing import cast
-import pytest
+
 
 def get_test_config_path() -> Path:
     test_root_dir = Path(__file__).resolve().parent
