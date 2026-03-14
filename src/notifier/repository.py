@@ -48,7 +48,7 @@ class TeamProductivityMetrics:
     reviewer_approvals: dict[str, int]  # username -> approval count
 
 
-def __get_age(from_when: datetime) -> tuple[int, int]:
+def _get_age(from_when: datetime) -> tuple[int, int]:
     now = datetime.now(timezone.utc)
     difference = now - from_when
     days = difference.days
@@ -56,7 +56,7 @@ def __get_age(from_when: datetime) -> tuple[int, int]:
     return (days, hours)
 
 
-def __get_review_status(reviews: PaginatedList[PullRequestReview], required_reviewers: list[str] | None = None) -> str:
+def _get_review_status(reviews: PaginatedList[PullRequestReview], required_reviewers: list[str] | None = None) -> str:
     if reviews.totalCount == 0:
         return "WAITING"
     latest_reviews = {}
@@ -102,8 +102,8 @@ def create_pull_request_info(pull_request: PullRequest) -> PullRequestInfo:
         name=pull_request.title,
         author=pull_request.user.login,
         created_at=pull_request.created_at,
-        age=__get_age(pull_request.created_at),
-        review_status=__get_review_status(pull_request.get_reviews(), required_reviewers),
+        age=_get_age(pull_request.created_at),
+        review_status=_get_review_status(pull_request.get_reviews(), required_reviewers),
         url=pull_request.html_url,
         additions=pull_request.additions,
         deletions=pull_request.deletions,

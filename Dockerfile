@@ -1,5 +1,5 @@
 # The builder image, used to build the virtual environment
-FROM python:3.12-bookworm as builder
+FROM python:3.12-bookworm AS builder
 
 ENV POETRY_NO_INTERACTION=1 \
     POETRY_VIRTUALENVS_IN_PROJECT=1 \
@@ -10,12 +10,12 @@ WORKDIR /app
 
 COPY pyproject.toml poetry.lock ./
 
-RUN pip install --no-cache-dir poetry==1.7.0 && \
+RUN pip install --no-cache-dir poetry==2.1.3 && \
     poetry install --without dev --no-root && \
     rm -rf $POETRY_CACHE_DIR
 
 # The runtime image, used to just run the code provided its virtual environment
-FROM python:3.12-slim-bookworm as runtime
+FROM python:3.12-slim-bookworm AS runtime
 
 ENV VIRTUAL_ENV=/app/.venv \
     PATH="/app/.venv/bin:$PATH" \

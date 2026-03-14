@@ -1,10 +1,10 @@
 import json
 from pathlib import Path
-from typing import cast
 
 import pytest
 
 from notifier import properties
+from notifier.properties import PullRequestNotification
 from notifier.repository import AuthorFilter, DraftFilter
 
 
@@ -26,12 +26,12 @@ def test_config_parsing() -> None:
     test_config_path = get_test_config_path()
     actual_parsed_config = properties.read_config(test_config_path)
 
-    expected_parsed_config: dict[str, properties.NotificationConfig] = {
-        "test-slack-channel1": ("pull_requests", {"repositories": ["testUser1/test-repo1"], "filters": [AuthorFilter(["testUser1"]), DraftFilter(False)]}),
-        "test-slack-channel2": ("pull_requests", {"repositories": ["testUser2/test-repo2", "testUser2/test-repo3"], "filters": []}),
-    }
+    expected = [
+        PullRequestNotification(slack_channel="test-slack-channel1", config={"repositories": ["testUser1/test-repo1"], "filters": [AuthorFilter(["testUser1"]), DraftFilter(False)]}),
+        PullRequestNotification(slack_channel="test-slack-channel2", config={"repositories": ["testUser2/test-repo2", "testUser2/test-repo3"], "filters": []}),
+    ]
 
-    assert actual_parsed_config == expected_parsed_config
+    assert actual_parsed_config == expected
 
 def test_trimming_and_deduplication_of_repositories_and_authors(tmp_path) -> None:
     config = {
@@ -48,12 +48,12 @@ def test_trimming_and_deduplication_of_repositories_and_authors(tmp_path) -> Non
     }
     config_path = create_config_file(tmp_path, config)
     parsed = properties.read_config(config_path)
-    notification_type, config = parsed["test-channel"]
-    
-    assert notification_type == "pull_requests"
-    pr_config = cast(properties.PullRequestConfig, config)
-    repositories = config["repositories"]
-    filters = pr_config["filters"]
+
+    assert len(parsed) == 1
+    notification = parsed[0]
+    assert isinstance(notification, PullRequestNotification)
+    repositories = notification.config["repositories"]
+    filters = notification.config["filters"]
     assert repositories == ["repo1", "repo2"]  # repositories trimmed and deduplicated, order preserved
     assert any(isinstance(f, AuthorFilter) and f.authors == ["alice", "bob"] for f in filters)
     assert any(isinstance(f, DraftFilter) and f.include_drafts is True for f in filters)
@@ -69,14 +69,12 @@ def test_missing_pull_request_filters(tmp_path) -> None:
     }
     config_path = create_config_file(tmp_path, config)
     parsed = properties.read_config(config_path)
-    notification_type, config = parsed["chan"]
-    
-    assert notification_type == "pull_requests"
-    pr_config = cast(properties.PullRequestConfig, config)
-    repositories = pr_config["repositories"]
-    filters = pr_config["filters"]
-    assert repositories == ["repo"]
-    assert filters == []
+
+    assert len(parsed) == 1
+    notification = parsed[0]
+    assert isinstance(notification, PullRequestNotification)
+    assert notification.config["repositories"] == ["repo"]
+    assert notification.config["filters"] == []
 
 def test_invalid_json(tmp_path) -> None:
     bad_json = "not json"
