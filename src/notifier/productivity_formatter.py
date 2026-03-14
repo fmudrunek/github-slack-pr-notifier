@@ -41,7 +41,7 @@ class ProductivityMessageFormatter:
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": f":dart: *Team Totals*\n" +
+                "text": ":dart: *Team Totals*\n" +
                         f":white_check_mark: *{metrics.total_merged_prs}* merged PRs\n" +
                         f":heavy_plus_sign: *+{metrics.total_lines_added:,}* lines added\n" +
                         f":heavy_minus_sign: *-{metrics.total_lines_deleted:,}* lines deleted\n"

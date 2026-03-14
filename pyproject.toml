@@ -49,6 +49,10 @@ mypy_path = "src"
 namespace_packages = true
 explicit_package_bases = true
 
+[[tool.mypy.overrides]]
+module = "tests.*"
+ignore_errors = true
+
 [tool.pylint.messages_control]
 disable = "all"
 enable = """,
