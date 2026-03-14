@@ -1,6 +1,6 @@
 from unittest.mock import Mock
 
-from notifier.repository import __get_review_status as get_review_status
+from notifier.repository import _get_review_status as get_review_status
 
 
 class DummyReview:

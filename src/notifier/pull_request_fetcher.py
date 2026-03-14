@@ -1,8 +1,7 @@
-import asyncio
 import logging
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
-from itertools import batched
-from typing import Any
+from typing import TypedDict
 
 from github import Auth, Github, UnknownObjectException
 from github.GithubException import GithubException
@@ -21,6 +20,13 @@ from notifier.repository import (
 LOG = logging.getLogger(__name__)
 
 CONNECTION_POOL_SIZE = 25
+
+
+class _RepositoryProductivityData(TypedDict):
+    merged_prs_count: int
+    lines_added: int
+    lines_deleted: int
+    approvals: dict[str, int]
 
 
 class PullRequestFetcher:
@@ -60,59 +66,50 @@ class PullRequestFetcher:
 
         filtered = []
         for pull_request in pull_requests:
-            for filter in pull_request_filters:
-                if not filter.applies(pull_request):
+            for pr_filter in pull_request_filters:
+                if not pr_filter.applies(pull_request):
                     break
             else:
                 filtered.append(pull_request)
         LOG.info("|-> Filtered down to %d Pull Requests", len(filtered))
-        pr_infos = asyncio.run(self.__to_pull_request_infos(filtered))
+        with ThreadPoolExecutor(max_workers=CONNECTION_POOL_SIZE) as pool:
+            pr_infos = list(pool.map(create_pull_request_info, filtered))
         return pr_infos
-
-    async def __to_pull_request_infos(self, pull_requests: list[PullRequest]) -> list[PullRequestInfo]:
-        result = []
-        for batch in batched(pull_requests, CONNECTION_POOL_SIZE):
-            result.extend(await asyncio.gather(*[self.__to_pull_request_info(pull_request) for pull_request in batch]))
-        return result
-
-    async def __to_pull_request_info(self, pull_request: PullRequest) -> PullRequestInfo:
-        loop = asyncio.get_event_loop()
-        return await loop.run_in_executor(None, create_pull_request_info, pull_request)
 
     def get_team_productivity_metrics(
         self, repository_names: list[str], team_members: list[str], time_window_days: int
     ) -> TeamProductivityMetrics:
         LOG.info("Fetching team productivity metrics for %d repositories, %d days window", len(repository_names), time_window_days)
-        
+
         since_date = datetime.now(timezone.utc) - timedelta(days=time_window_days)
         repository_metrics = []
         total_merged_prs = 0
         total_lines_added = 0
         total_lines_deleted = 0
         reviewer_approvals: dict[str, int] = {}
-        
+
         for repo_name in repository_names:
             repo_data = self.__get_repository_productivity_data(repo_name, team_members, since_date)
-            
+
             repo_metrics = RepositoryProductivityMetrics(
                 repository_name=repo_name,
                 merged_prs_count=repo_data["merged_prs_count"],
                 lines_added=repo_data["lines_added"],
                 lines_deleted=repo_data["lines_deleted"]
             )
-            
+
             repository_metrics.append(repo_metrics)
             total_merged_prs += repo_data["merged_prs_count"]
             total_lines_added += repo_data["lines_added"]
             total_lines_deleted += repo_data["lines_deleted"]
-            
+
             # Aggregate approval counts
             for username, count in repo_data["approvals"].items():
                 reviewer_approvals[username] = reviewer_approvals.get(username, 0) + count
-        
-        LOG.info("Team productivity summary: %d merged PRs, +%d/-%d lines across %d repositories", 
+
+        LOG.info("Team productivity summary: %d merged PRs, +%d/-%d lines across %d repositories",
                 total_merged_prs, total_lines_added, total_lines_deleted, len(repository_names))
-        
+
         return TeamProductivityMetrics(
             time_window_days=time_window_days,
             total_merged_prs=total_merged_prs,
@@ -124,9 +121,9 @@ class PullRequestFetcher:
 
     def __get_repository_productivity_data(
         self, repository_name: str, team_members: list[str], since_date: datetime
-    ) -> dict[str, Any]:
+    ) -> _RepositoryProductivityData:
         LOG.info("Fetching productivity data for repository %s", repository_name)
-        
+
         try:
             repo = self.__github.get_repo(repository_name)
         except UnknownObjectException as e:
@@ -137,12 +134,12 @@ class PullRequestFetcher:
         # Get closed PRs
         closed_pulls = repo.get_pulls(state="closed", sort="updated", direction="desc")
         LOG.info("|-> Found %d closed Pull Requests in total", closed_pulls.totalCount)
-        
+
         merged_prs_count = 0
         lines_added = 0
         lines_deleted = 0
         approval_counts: dict[str, int] = {}
-        
+
         for pr in closed_pulls:
             LOG.info("|-> Examining PR #%d: '%s'", pr.number, pr.title)
             # Stop if we've gone beyond our time window
@@ -154,13 +151,13 @@ class PullRequestFetcher:
                 merged_prs_count += 1
                 lines_added += pr.additions
                 lines_deleted += pr.deletions
-                
+
                 # Count approvals from team members on PRs authored by team members
                 try:
                     LOG.info("|->|-> Checking reviews for PR #%d", pr.number)
                     reviews = pr.get_reviews()
                     for review in reviews:
-                        if (review.state == "APPROVED" and 
+                        if (review.state == "APPROVED" and
                             review.user.login in team_members and
                             review.submitted_at and review.submitted_at >= since_date):
                             reviewer_username = review.user.login
@@ -169,12 +166,12 @@ class PullRequestFetcher:
                 except GithubException:
                     # Skip reviews for this PR if we can't access them
                     continue
-                
-                
-        
-        LOG.info("|-> Found %d merged PRs with +%d/-%d lines, approvals: %s", 
+
+
+
+        LOG.info("|-> Found %d merged PRs with +%d/-%d lines, approvals: %s",
                 merged_prs_count, lines_added, lines_deleted, dict(approval_counts))
-        
+
         return {
             "merged_prs_count": merged_prs_count,
             "lines_added": lines_added,
