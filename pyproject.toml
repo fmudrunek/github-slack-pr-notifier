@@ -14,21 +14,24 @@ python-dotenv = "^1.1.1"
 regex = "^2026.1.15"
 
 [tool.poetry.group.dev.dependencies]
-black = "^25.1.0"
-isort = "^7.0.0"
-poethepoet = "^0.40.0"
+black = "^26.3.1"
+isort = "^8.0.1"
+poethepoet = "^0.42.1"
 pytest = "^9.0.2"
-pytest-pylint = "^0.21.0"
 mypy = "^1.17.1"
-pytest-mypy = "^1.0.1"
+pylint = "^4.0.0"
 
 [tool.poe.tasks]
 _black = "black ."
 _isort = "isort ."
 format-code = ["_isort", "_black"]
+test = "pytest"
+type = "mypy src/"
+lint = { cmd = "pylint src/ --rcfile=pyproject.toml", help = "Run pylint on src/" }
+check = { sequence = ["type", "lint", "test"], help = "Run all quality checks: type checking → linting → tests" }
 
 [tool.pytest.ini_options]
-addopts = "--verbose --pylint --pylint-rcfile=pyproject.toml --mypy"
+addopts = "--verbose"
 pythonpath = "src"
 
 [tool.isort]
@@ -49,9 +52,6 @@ mypy_path = "src"
 namespace_packages = true
 explicit_package_bases = true
 
-[[tool.mypy.overrides]]
-module = "tests.*"
-ignore_errors = true
 
 [tool.pylint.messages_control]
 disable = "all"
@@ -75,7 +75,6 @@ enable = """,
     raise-missing-from,
     no-else-return
     """
-ignored_argument_names = "_.*|^ignored_|^unused_|args|kwargs"
 
 [build-system]
 requires = ["poetry-core"]

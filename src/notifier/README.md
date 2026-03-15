@@ -22,9 +22,16 @@ Then you can install dependencies
     poetry install
 
 ### Run tests, linters and type checkers
-Everything is hooked to pytest. You can run all tests and checks with:
+Quality checks are split into focused tasks using [Poe](https://github.com/nat-n/poethepoet):
 
-    poetry run pytest
+| Command | What it does |
+|---|---|
+| `poetry run poe check` | Run all checks: type checking → linting → tests |
+| `poetry run poe test` | Run tests only (fast iteration) |
+| `poetry run poe type` | Run mypy type checking only |
+| `poetry run poe lint` | Run pylint only |
+
+Each tool exits non-zero on failure; `poe check` stops at the first failing step.
 
 ### Code formatting
 The application is formatted using [black](https://black.readthedocs.io/en/stable/) and [isort](https://pycqa.github.io/isort/).  

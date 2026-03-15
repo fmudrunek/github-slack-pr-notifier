@@ -76,9 +76,7 @@ class PullRequestFetcher:
             pr_infos = list(pool.map(create_pull_request_info, filtered))
         return pr_infos
 
-    def get_team_productivity_metrics(
-        self, repository_names: list[str], team_members: list[str], time_window_days: int
-    ) -> TeamProductivityMetrics:
+    def get_team_productivity_metrics(self, repository_names: list[str], team_members: list[str], time_window_days: int) -> TeamProductivityMetrics:
         LOG.info("Fetching team productivity metrics for %d repositories, %d days window", len(repository_names), time_window_days)
 
         since_date = datetime.now(timezone.utc) - timedelta(days=time_window_days)
@@ -95,7 +93,7 @@ class PullRequestFetcher:
                 repository_name=repo_name,
                 merged_prs_count=repo_data["merged_prs_count"],
                 lines_added=repo_data["lines_added"],
-                lines_deleted=repo_data["lines_deleted"]
+                lines_deleted=repo_data["lines_deleted"],
             )
 
             repository_metrics.append(repo_metrics)
@@ -107,8 +105,13 @@ class PullRequestFetcher:
             for username, count in repo_data["approvals"].items():
                 reviewer_approvals[username] = reviewer_approvals.get(username, 0) + count
 
-        LOG.info("Team productivity summary: %d merged PRs, +%d/-%d lines across %d repositories",
-                total_merged_prs, total_lines_added, total_lines_deleted, len(repository_names))
+        LOG.info(
+            "Team productivity summary: %d merged PRs, +%d/-%d lines across %d repositories",
+            total_merged_prs,
+            total_lines_added,
+            total_lines_deleted,
+            len(repository_names),
+        )
 
         return TeamProductivityMetrics(
             time_window_days=time_window_days,
@@ -116,12 +119,10 @@ class PullRequestFetcher:
             total_lines_added=total_lines_added,
             total_lines_deleted=total_lines_deleted,
             repository_breakdown=repository_metrics,
-            reviewer_approvals=reviewer_approvals
+            reviewer_approvals=reviewer_approvals,
         )
 
-    def __get_repository_productivity_data(
-        self, repository_name: str, team_members: list[str], since_date: datetime
-    ) -> _RepositoryProductivityData:
+    def __get_repository_productivity_data(self, repository_name: str, team_members: list[str], since_date: datetime) -> _RepositoryProductivityData:
         LOG.info("Fetching productivity data for repository %s", repository_name)
 
         try:
@@ -157,9 +158,12 @@ class PullRequestFetcher:
                     LOG.info("|->|-> Checking reviews for PR #%d", pr.number)
                     reviews = pr.get_reviews()
                     for review in reviews:
-                        if (review.state == "APPROVED" and
-                            review.user.login in team_members and
-                            review.submitted_at and review.submitted_at >= since_date):
+                        if (
+                            review.state == "APPROVED"
+                            and review.user.login in team_members
+                            and review.submitted_at
+                            and review.submitted_at >= since_date
+                        ):
                             reviewer_username = review.user.login
                             LOG.info("|->|-> Found approval from %s", reviewer_username)
                             approval_counts[reviewer_username] = approval_counts.get(reviewer_username, 0) + 1
@@ -167,14 +171,6 @@ class PullRequestFetcher:
                     # Skip reviews for this PR if we can't access them
                     continue
 
+        LOG.info("|-> Found %d merged PRs with +%d/-%d lines, approvals: %s", merged_prs_count, lines_added, lines_deleted, dict(approval_counts))
 
-
-        LOG.info("|-> Found %d merged PRs with +%d/-%d lines, approvals: %s",
-                merged_prs_count, lines_added, lines_deleted, dict(approval_counts))
-
-        return {
-            "merged_prs_count": merged_prs_count,
-            "lines_added": lines_added,
-            "lines_deleted": lines_deleted,
-            "approvals": approval_counts
-        }
+        return {"merged_prs_count": merged_prs_count, "lines_added": lines_added, "lines_deleted": lines_deleted, "approvals": approval_counts}

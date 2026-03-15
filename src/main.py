@@ -6,7 +6,11 @@ from pathlib import Path
 from notifier import properties
 from notifier.productivity_formatter import ProductivityMessageFormatter
 from notifier.productivity_notifier import ProductivityNotifier
-from notifier.properties import Notification, ProductivityNotification, PullRequestNotification
+from notifier.properties import (
+    Notification,
+    ProductivityNotification,
+    PullRequestNotification,
+)
 from notifier.pull_request_fetcher import PullRequestFetcher
 from notifier.slack_client import SlackClient
 from notifier.slack_notifier import SlackBlockNotifier
@@ -27,23 +31,20 @@ Examples:
   python main.py                           # Run pull request notifications (default)
   python main.py --type pull_requests     # Run only pull request notifications
   python main.py --type team_productivity # Run only team productivity notifications
-        """
+        """,
     )
 
     parser.add_argument(
         "--type",
         choices=["pull_requests", "team_productivity"],
         default="pull_requests",
-        help="Type of notifications to run (default: pull_requests)"
+        help="Type of notifications to run (default: pull_requests)",
     )
 
     return parser.parse_args()
 
 
-def filter_notifications_by_type(
-    notifications: list[Notification],
-    notification_type_filter: str
-) -> list[Notification]:
+def filter_notifications_by_type(notifications: list[Notification], notification_type_filter: str) -> list[Notification]:
     """Filter notifications to only include specified notification type"""
     type_map = {
         "pull_requests": PullRequestNotification,
@@ -98,7 +99,7 @@ def run_notifications(
                 pr_notifier.send_report_for_repos(
                     notification.slack_channel,
                     notification.config["repositories"],
-                    lambda repo_name: fetcher.get_repository_info(repo_name, notification.config["filters"])
+                    lambda repo_name: fetcher.get_repository_info(repo_name, notification.config["filters"]),
                 )
             elif isinstance(notification, ProductivityNotification):
                 productivity_notifier.send_productivity_report(
@@ -106,7 +107,7 @@ def run_notifications(
                     notification.config["repositories"],
                     notification.config["team_members"],
                     notification.config["time_window_days"],
-                    fetcher.get_team_productivity_metrics
+                    fetcher.get_team_productivity_metrics,
                 )
 
         except (ValueError, RuntimeError, ConnectionError) as e:

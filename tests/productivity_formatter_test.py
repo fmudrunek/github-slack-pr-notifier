@@ -1,7 +1,7 @@
 import json
 
-from notifier.repository import RepositoryProductivityMetrics, TeamProductivityMetrics
 from notifier.productivity_formatter import ProductivityMessageFormatter
+from notifier.repository import RepositoryProductivityMetrics, TeamProductivityMetrics
 
 formatter = ProductivityMessageFormatter()
 
