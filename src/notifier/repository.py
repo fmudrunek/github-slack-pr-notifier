@@ -10,6 +10,42 @@ from github.PaginatedList import PaginatedList
 from github.PullRequest import PullRequest
 from github.PullRequestReview import PullRequestReview
 
+COPILOT_AUTHOR_LOGINS = frozenset({"copilot", "copilot-swe-agent"})
+# Bot reviewer logins to ignore when picking the "first approver" fallback for Copilot-authored PRs.
+_IGNORED_REVIEWER_LOGINS = frozenset({"copilot-pull-request-reviewer", "copilot", "copilot-swe-agent"})
+
+
+def _is_copilot_author(login: str) -> bool:
+    return login.lower() in COPILOT_AUTHOR_LOGINS
+
+
+def _resolve_copilot_requester(pull_request: PullRequest, requested_reviewer_logins: list[str] | None = None) -> str | None:
+    """
+    For a Copilot-authored PR, return the human who requested the work.
+    Preference: first requested reviewer; fallback: first non-bot approver.
+    Pass `requested_reviewer_logins` to avoid a duplicate `get_review_requests` call when the caller already has them.
+    """
+    if requested_reviewer_logins is None:
+        try:
+            requested_reviewer_logins = [user.login for user in pull_request.get_review_requests()[0]]
+        except (IndexError, AttributeError):
+            requested_reviewer_logins = []
+    if requested_reviewer_logins:
+        return requested_reviewer_logins[0]
+    try:
+        for review in pull_request.get_reviews():
+            if review.state != "APPROVED":
+                continue
+            login = review.user.login
+            if login.lower() in _IGNORED_REVIEWER_LOGINS:
+                continue
+            if login.lower().endswith("[bot]"):
+                continue
+            return login
+    except (AttributeError, TypeError):
+        pass
+    return None
+
 
 @dataclass(frozen=True, slots=True)
 class PullRequestInfo:
@@ -22,6 +58,7 @@ class PullRequestInfo:
     additions: int
     deletions: int
     changed_files: int
+    copilot_requester: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -98,6 +135,7 @@ def create_pull_request_info(pull_request: PullRequest) -> PullRequestInfo:
         required_reviewers = [user.login for user in reqs]
     except (IndexError, AttributeError):
         pass
+    copilot_requester = _resolve_copilot_requester(pull_request, required_reviewers) if _is_copilot_author(pull_request.user.login) else None
     return PullRequestInfo(
         name=pull_request.title,
         author=pull_request.user.login,
@@ -108,6 +146,7 @@ def create_pull_request_info(pull_request: PullRequest) -> PullRequestInfo:
         additions=pull_request.additions,
         deletions=pull_request.deletions,
         changed_files=pull_request.changed_files,
+        copilot_requester=copilot_requester,
     )
 
 
@@ -122,7 +161,14 @@ class AuthorFilter(PullRequestFilter):
     authors: list[str]
 
     def applies(self, pull_request: PullRequest) -> bool:
-        return not self.authors or pull_request.user.login in self.authors
+        if not self.authors:
+            return True
+        if pull_request.user.login in self.authors:
+            return True
+        if _is_copilot_author(pull_request.user.login):
+            requester = _resolve_copilot_requester(pull_request)
+            return requester is not None and requester in self.authors
+        return False
 
 
 @dataclass(frozen=True, slots=True)

@@ -64,6 +64,9 @@ For a full config example see [config_example.json](./resources/config_example.j
 * `include_drafts` - Boolean. Include draft PRs if `true`.
 * `title_regex` - Regex pattern. Only show PRs with matching titles.
 
+**PRs created by agents/bots (e.g. GitHub Copilot)**:
+Currently ony implemented for Github Copilot. PRs authored by Copilot will be attributed to the person who requested the work. Such PRs are shown as `<human requester> (via Copilot)` in the Slack message.
+
 #### Team Productivity Notifications
 ```json
 {

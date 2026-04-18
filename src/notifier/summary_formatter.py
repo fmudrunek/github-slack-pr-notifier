@@ -8,6 +8,11 @@ Formats the summary message for Slack using Slack's Block Kit format (instead of
 
 class SummaryMessageFormatter:
 
+    def __format_author(self, pull: PullRequestInfo) -> str:
+        if pull.copilot_requester:
+            return f"{pull.copilot_requester} (via Copilot)"
+        return pull.author
+
     def __get_review_status(self, status: str) -> str:
         return f" {status}" if status in {"APPROVED", "CHANGES_REQUESTED"} else ""
 
@@ -54,7 +59,7 @@ class SummaryMessageFormatter:
             element_blocks = [
                 {"type": "emoji", "name": age_urgency} if age_urgency else None,
                 {"type": "link", "url": pull.url, "text": pull.name, "style": {"bold": True}},
-                {"type": "text", "text": f"\n{code_change_status}\n{age} ago by {pull.author}"},
+                {"type": "text", "text": f"\n{code_change_status}\n{age} ago by {self.__format_author(pull)}"},
                 {"type": "text", "text": f"{review_status}", "style": {"bold": True}} if review_status else None,
                 {"type": "emoji", "name": "wave"} if review_status else None,
             ]
