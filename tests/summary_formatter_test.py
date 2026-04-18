@@ -14,6 +14,7 @@ def _make_pr(
     additions: int = 10,
     deletions: int = 5,
     changed_files: int = 2,
+    copilot_requester: str | None = None,
 ) -> PullRequestInfo:
     return PullRequestInfo(
         name=name,
@@ -25,6 +26,7 @@ def _make_pr(
         additions=additions,
         deletions=deletions,
         changed_files=changed_files,
+        copilot_requester=copilot_requester,
     )
 
 
@@ -130,6 +132,22 @@ def test_repo_header_on_first_pr_only() -> None:
     assert messages[0][0]["type"] == "header"
     # Second message has only PR block
     assert len(messages[1]) == 1
+
+
+# Copilot attribution
+def test_author_shown_plain_when_no_copilot_requester() -> None:
+    pr = _make_pr(author="alice")
+    repo = RepositoryInfo(name="org/repo", pulls=[pr])
+    text = _extract_text(formatter.get_messages_for_repo(repo))
+    assert "by alice" in text
+    assert "via Copilot" not in text
+
+
+def test_author_shown_as_via_copilot_when_requester_set() -> None:
+    pr = _make_pr(author="Copilot", copilot_requester="test-author")
+    repo = RepositoryInfo(name="org/repo", pulls=[pr])
+    text = _extract_text(formatter.get_messages_for_repo(repo))
+    assert "by test-author (via Copilot)" in text
 
 
 # Empty pulls
