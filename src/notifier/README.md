@@ -39,6 +39,9 @@ You can either run black and isort manually or use prepared [Poe](https://github
 
 	$ poetry run poe format-code
 
+### Running locally via Claude Code
+If you use [Claude Code](https://claude.com/claude-code), the repo ships a `/run-notifier` skill (see [.claude/skills/run-notifier/](../../.claude/skills/run-notifier/SKILL.md)). It prompts for the flow (`pull_requests` / `team_productivity`), a config from `resources/`, and a `.env` file, shows the target Slack channel and final command, then runs the Docker build+run for you.
+
 ### Maintainance
 To update dependencies within the pinned range, run:
 
