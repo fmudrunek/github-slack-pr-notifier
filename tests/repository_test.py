@@ -153,3 +153,11 @@ def test_required_reviewer_missing_review():
     reviews = make_reviews(("alice", "APPROVED"))
     required_reviewers = ["alice", "bob"]
     assert get_review_status(reviews, required_reviewers) == "WAITING"
+
+def test_empty_required_reviewers_falls_back_to_all_reviewers_waiting():
+    reviews = make_reviews(("alice", "APPROVED"), ("bob", "COMMENTED"))
+    assert get_review_status(reviews, []) == "WAITING"
+
+def test_empty_required_reviewers_falls_back_to_all_reviewers_approved():
+    reviews = make_reviews(("alice", "APPROVED"), ("bob", "APPROVED"))
+    assert get_review_status(reviews, []) == "APPROVED"

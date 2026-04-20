@@ -103,7 +103,7 @@ def _get_review_status(reviews: PaginatedList[PullRequestReview], required_revie
     if not latest_reviews:
         return "WAITING"
     # If required reviewers are specified, only consider their reviews
-    if required_reviewers is not None:
+    if required_reviewers:
         # Check for missing reviews
         for req in required_reviewers:
             if req not in latest_reviews:
