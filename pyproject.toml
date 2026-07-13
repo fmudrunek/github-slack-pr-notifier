@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "github-slack-pr-notifier"
-version = "2.4"
+version = "2.5"
 description = ""
 authors = []
 license = "MIT"
@@ -17,7 +17,7 @@ regex = "^2026.5.9"
 [tool.poetry.group.dev.dependencies]
 black = "^26.3.1"
 isort = "^8.0.1"
-poethepoet = "^0.45.0"
+poethepoet = "^0.48.0"
 pytest = "^9.0.2"
 mypy = "^2.1.0"
 pylint = "^4.0.0"

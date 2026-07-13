@@ -118,8 +118,10 @@ def _get_review_status(reviews: PaginatedList[PullRequestReview], required_revie
     # Fallback: consider all reviewers
     if any(r.state == "CHANGES_REQUESTED" for r in latest_reviews.values()):
         return "CHANGES_REQUESTED"
-    if all(r.state == "APPROVED" for r in latest_reviews.values()):
+    # If there are no required reviewers, we can consider the PR approved if any reviewer has approved it
+    if any(r.state == "APPROVED" for r in latest_reviews.values()):
         return "APPROVED"
+    
     return "WAITING"
 
 

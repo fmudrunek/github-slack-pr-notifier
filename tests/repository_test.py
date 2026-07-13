@@ -119,9 +119,9 @@ def test_latest_review_per_reviewer_is_used():
     )
     assert get_review_status(reviews) == "APPROVED"
 
-def test_waiting_if_some_not_approved():
+def test_approved_if_no_required_but_has_approval():
     reviews = make_reviews(("alice", "APPROVED"), ("bob", "COMMENTED"))
-    assert get_review_status(reviews) == "WAITING"
+    assert get_review_status(reviews) == "APPROVED"
 
 def test_required_reviewers_approve_and_comment():
     # alice is required and approves, bob is required and only comments
@@ -153,10 +153,6 @@ def test_required_reviewer_missing_review():
     reviews = make_reviews(("alice", "APPROVED"))
     required_reviewers = ["alice", "bob"]
     assert get_review_status(reviews, required_reviewers) == "WAITING"
-
-def test_empty_required_reviewers_falls_back_to_all_reviewers_waiting():
-    reviews = make_reviews(("alice", "APPROVED"), ("bob", "COMMENTED"))
-    assert get_review_status(reviews, []) == "WAITING"
 
 def test_empty_required_reviewers_falls_back_to_all_reviewers_approved():
     reviews = make_reviews(("alice", "APPROVED"), ("bob", "APPROVED"))
